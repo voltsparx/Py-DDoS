@@ -2,7 +2,7 @@
 """
 Py-DDoS Simulator - Ethical Cybersecurity Demonstration Tool
 Author: voltsparx
-Contact: voltsparx@204
+Contact: voltsparx@gmail.com
 
 WARNING: This tool is designed for educational purposes and ethical security testing only.
 Unauthorized use against any network or system without explicit permission is illegal.
@@ -51,7 +51,7 @@ class DDoSSimulator:
             "║                 Ethical Demonstration Tool                   ║\n"
             "║                                                              ║\n"
             "║                 Author: voltsparx                            ║\n"
-            "║                 Contact: voltsparx@204                       ║\n"
+            "║                 Contact: voltsparx@gmail.com                 ║\n"
             "╚══════════════════════════════════════════════════════════════╝\n[/bold magenta]"
         )
         if RICH_AVAILABLE:
