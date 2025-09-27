@@ -58,7 +58,7 @@ $ python py-ddos.py
 ║                 Py-DDoS Simulator v2.0                       ║
 ║                 Ethical Demonstration Tool                   ║
 ║                 Author: voltsparx                            ║
-║                 Contact: voltsparx@204                       ║
+║                 Contact: voltsparx@gmail.com                 ║
 ╚══════════════════════════════════════════════════════════════╝
 
 [... warning and configuration prompts ...]
