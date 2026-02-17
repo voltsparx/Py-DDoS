@@ -1,3 +1,8 @@
-requests>=2.25.0
-urllib3>=1.26.0
 rich>=13.0.0
+requests>=2.28.0
+matplotlib>=3.5.0
+scapy>=2.4.0
+stem>=1.8.0
+
+# Optional: For high-scale async HTTP testing (async_engine)
+aiohttp>=3.8.0

