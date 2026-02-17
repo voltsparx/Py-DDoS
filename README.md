@@ -1,10 +1,8 @@
-# Py-DDoS v7.1 - Advanced Network Stress Testing Tool
+# Py-DDoS v7.5 - Operational Network Stress Testing Tool
 
 **Author:** voltsparx  
 **Contact:** voltsparx@gmail.com  
-**Version:** 7.1  
-**Release Date:** February 17, 2026  
-**Status:** Production Ready with Enterprise-Grade Safety & Metrics
+**Version:** 7.5  
 
 ---
 
@@ -34,7 +32,7 @@ Unauthorized access to computer systems is **ILLEGAL** under laws including:
 ## Table of Contents
 
 1. [Overview](#overview)
-2. [What's New in v7.1](#whats-new-in-v71)
+2. [What's New in v7.5](#whats-new-in-v75)
 3. [Installation](#installation)
 4. [Quick Start](#quick-start)
 5. [Features](#features)
@@ -66,7 +64,7 @@ Unauthorized access to computer systems is **ILLEGAL** under laws including:
 
 ---
 
-## What's New in v7.1
+## What's New in v7.5
 
 ### 1. Enhanced Safety Locks System
 - **Audit Trail Logging** - Every security check is logged with timestamp
@@ -119,9 +117,6 @@ Generates professional reports with interactive visualizations:
 - Plain-text for grepping/parsing
 - Legal disclaimers
 
-### 4. Developer-Friendly Documentation
-**File:** `DEVELOPERS_GUIDE.md`
-
 420+ lines of conversational guide including:
 - 30-second quick start
 - Architecture overview
@@ -132,7 +127,7 @@ Generates professional reports with interactive visualizations:
 - Security disclaimer
 - Learning resources
 
-### 5. Code Quality Enhancements
+### 4. Code Quality Enhancements
 
 All 18 code quality issues fixed:
 - ✅ Duplicate methods removed (~150 lines)
@@ -239,43 +234,6 @@ python py-ddos.py --config my_test.json
 # Save configuration
 python py-ddos.py -t example.com -a HTTP -c 100 -d 60 --save-config test.json
 ```
-
-### Programmatic Usage
-
-```python
-from core.engine import PyDDoS
-from core.safety_locks import SafetyLocks
-from core.reporter_v2 import ReportGenerator
-
-# Setup configuration
-config = {
-    'target_host': 'example.com',
-    'target_port': 80,
-    'attack_type': 'HTTP',
-    'threads': 100,
-    'duration': 60,
-    'use_tor': False,
-    'authorized': True,
-    'authorized_external': True
-}
-
-# Check safety
-locks = SafetyLocks()
-locks.print_risk_assessment(config)
-if not locks.check_all(config):
-    exit(1)
-
-# Run attack
-attack = PyDDoS(**config)
-attack.start()
-
-# Generate report
-metrics_data = attack.metrics.get_summary()
-reporter = ReportGenerator()
-html_path, txt_path = reporter.generate(metrics_data, config)
-print(f"Reports: {html_path}, {txt_path}")
-```
-
 ---
 
 ## Features
