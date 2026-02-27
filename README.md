@@ -725,13 +725,11 @@ python redload-x.py -t target.com -c 50 ...  # Instead of 500
 ### Architecture
 
 ```
-redload-x/
+RedLoad-X/
 ├── redload-x.py              # Entry point with CLI parsing
 ├── requirements.txt           # Python dependencies
 ├── README.md                  # This documentation
 ├── SECURITY.md               # Legal and security framework
-├── CONTRIBUTING.md           # Contribution guidelines
-│
 └── core/
     ├── __init__.py            # Package exports and helpers
     ├── engine/                # Core engine implementation
@@ -1114,5 +1112,5 @@ This tool is provided **AS-IS** for educational purposes. The author (voltsparx)
 
 **RedLoad-X v7.1** - Network Stress Testing Tool  
 **By voltsparx** | voltsparx@gmail.com  
-**Released:** February 17, 2026  
+**Released:** September, 2025  
 **Status:** Production Ready
