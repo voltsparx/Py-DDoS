@@ -1,4 +1,5 @@
-# RedLoad-X v8.0 - Operational Network Stress Testing Tool
+# RedLoad-X v8.0
+**Operational Network Stress Testing Tool**
 
 *Originally released as **Py-DDoS**; project was renamed to RedLoad-X with v7.5 for clarity and improved scope.*
 
