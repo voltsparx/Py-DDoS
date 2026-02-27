@@ -70,7 +70,7 @@ Unauthorized access to computer systems is **ILLEGAL** under laws including:
 
 ### v8.0 Release Notes
 
-The 8.0 release consolidates the previous 7.5.1 changes and marks a major
+The 8.0 release consolidates the previous 7.5 changes and marks a major
 milestone.  Highlights include:
 
 - Added **warn-only safety mode** (`--warn-only-locks`) allowing warnings without
@@ -93,9 +93,6 @@ milestone.  Highlights include:
 - TOR implications warnings
 - Customizable thresholds
 
-### 2. Real-Time Metrics Collection (NEW)
-**Core Module:** `core/metrics.py`
-
 Automatically tracks 30+ metrics throughout test execution:
 - Requests per second (RPS)
 - Success/failure rates
@@ -105,11 +102,6 @@ Automatically tracks 30+ metrics throughout test execution:
 - Connection state analysis
 - Time-series data for graphing
 - Automatic educational insights
-
-### 3. Improved Reporting System (NEW)
-**Core Module:** `core/reporter_v2.py`
-
-Generates detailed reports with interactive visualizations:
 
 **HTML Reports Feature:**
 - Interactive Chart.js graphs (v4.0)
@@ -139,7 +131,7 @@ Generates detailed reports with interactive visualizations:
 - Security disclaimer
 - Learning resources
 
-### 4. Code Quality Enhancements
+### 2. Code Quality Enhancements
 
 All 18 code quality issues fixed:
 - ✅ Duplicate methods removed (~150 lines)
