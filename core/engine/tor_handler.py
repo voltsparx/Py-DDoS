@@ -7,7 +7,7 @@ from stem.util import term
 import logging
 
 class TORHandler:
-    """Advanced TOR handler with circuit rotation, metrics, and error handling"""
+    """TOR handler with circuit rotation, metrics, and error handling"""
     
     def __init__(self):
         self.controller = None

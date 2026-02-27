@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-Professional Report Generator v7.5 - Unified Report Module
-Generates comprehensive HTML reports with interactive Chart.js visualizations 
+Report Generator v8.0 - Unified Report Module
+Generates HTML reports with interactive Chart.js visualizations 
 and detailed TXT analysis reports
 
 Supports both legacy (stats-based) and modern (metrics-based) report generation
@@ -12,7 +12,7 @@ Contact: voltsparx@gmail.com
 
 Features:
 - Interactive Chart.js v4.0+ graphs (bar, doughnut, pie, line charts)
-- Professional HTML design with gradient styling
+- HTML design with gradient styling
 - Response time analysis and distribution
 - HTTP status code breakdown
 - Connection state visualization
@@ -27,12 +27,12 @@ from pathlib import Path
 from datetime import datetime
 import json
 import statistics
-from .colors import Styles, Colors
+from .ui.colors import Styles, Colors
 
 
 class ReportGenerator:
     """
-    Professional report generation with advanced visualizations
+    Report generation with interactive visualizations
     
     Supports both legacy (stats/RPS samples) and modern (metrics-based) interfaces
     for backward compatibility with existing code.
@@ -85,14 +85,19 @@ class ReportGenerator:
             html_report = self._generate_html_report_modern(metrics_data, config, timestamp)
             txt_report = self._generate_txt_report_modern(metrics_data, config, timestamp)
         
-        # Save both formats
-        html_path = self.reports_dir / f"pyddos_report_{timestamp}.html"
-        txt_path = self.reports_dir / f"pyddos_report_{timestamp}.txt"
+        # Save both formats in dedicated subdirectories
+        html_dir = self.reports_dir / "html"
+        txt_dir = self.reports_dir / "cli"
+        html_dir.mkdir(parents=True, exist_ok=True)
+        txt_dir.mkdir(parents=True, exist_ok=True)
+        html_path = html_dir / f"redloadx_report_{timestamp}.html"
+        txt_path = txt_dir / f"redloadx_report_{timestamp}.txt"
         
-        with open(html_path, 'w') as f:
+        # write reports using UTF-8 to avoid encoding issues on Windows
+        with open(html_path, 'w', encoding='utf-8') as f:
             f.write(html_report)
         
-        with open(txt_path, 'w') as f:
+        with open(txt_path, 'w', encoding='utf-8') as f:
             f.write(txt_report)
         
         return str(html_path), str(txt_path)
@@ -132,7 +137,7 @@ class ReportGenerator:
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Py-DDoS v7.1 Network Stress Test Report</title>
+    <title>RedLoad-X v7.1 Network Stress Test Report</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.0.0/dist/chart.min.js"></script>
     <style>
         * {{
@@ -143,7 +148,7 @@ class ReportGenerator:
         
         body {{
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #ff4d4d 0%, #cc0000 100%);
             color: #333;
             padding: 20px;
             min-height: 100vh;
@@ -159,11 +164,11 @@ class ReportGenerator:
         }}
         
         .header {{
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #ff4d4d 0%, #cc0000 100%);
             color: white;
             padding: 50px;
             text-align: center;
-            border-bottom: 5px solid #764ba2;
+            border-bottom: 5px solid #cc0000;
         }}
         
         .header h1 {{
@@ -231,11 +236,11 @@ class ReportGenerator:
         }}
         
         .metric-card {{
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #ff4d4d 0%, #cc0000 100%);
             color: white;
             padding: 25px;
             border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(102,126,234,0.3);
+            box-shadow: 0 4px 15px rgba(255,77,77,0.3);
             text-align: center;
         }}
         
@@ -309,7 +314,7 @@ class ReportGenerator:
 <body>
     <div class="container">
         <div class="header">
-            <h1>🔴 Py-DDoS v7.1</h1>
+            <h1>🔴 RedLoad-X v7.1</h1>
             <p>Network Stress Test Report</p>
             <p style="font-size: 0.9em; margin-top: 10px;">Operational Testing Framework | Educational & Authorized Use Only</p>
         </div>
@@ -439,7 +444,7 @@ class ReportGenerator:
         
         <div class="footer">
             <div class="footer-info">
-                <strong>Py-DDoS v7.1 - Operational Network Stress Testing Tool</strong>
+                <strong>RedLoad-X v7.1 - Operational Network Stress Testing Tool</strong>
             </div>
             <div class="footer-info">
                 Author: voltsparx | Contact: voltsparx@gmail.com
@@ -530,7 +535,8 @@ class ReportGenerator:
         """Generate JavaScript for status code chart"""
         if not labels:
             return ""
-        colors = ['#28a745', '#ffc107', '#dc3545', '#17a2b8', '#6c757d']
+        # All chart colors switched to bright red palette for aesthetics
+        colors = ['#FF0000', '#FF3333', '#FF6666', '#FF9999', '#FFCCCC']
         return f"""
         const scCtx = document.getElementById('statusCodeChart').getContext('2d');
         new Chart(scCtx, {{
@@ -605,7 +611,7 @@ class ReportGenerator:
         """Generate plain text analysis report (modern interface)"""
         txt = f"""
 {'='*80}
-PY-DDOS v7.1 - NETWORK STRESS TEST REPORT
+REDLOAD-X v7.1 - NETWORK STRESS TEST REPORT
 {'='*80}
 
 Report Generated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
@@ -710,6 +716,13 @@ End of Report
     def _generate_html_report_legacy(self, stats, config, rps_samples, timestamp):
         """Generate comprehensive HTML report (legacy interface)"""
         
+        # rps_samples may be a deque; convert for JSON serialization and stats
+        if rps_samples is not None and not isinstance(rps_samples, list):
+            try:
+                rps_samples = list(rps_samples)
+            except TypeError:
+                rps_samples = []
+        
         # Calculate additional metrics
         rps_avg = statistics.mean(rps_samples) if rps_samples else 0
         rps_peak = max(rps_samples) if rps_samples else 0
@@ -724,7 +737,7 @@ End of Report
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Py-DDoS v7.1 Attack Report - {config.get('attack_type', 'Unknown')}</title>
+    <title>RedLoad-X v7.1 Attack Report - {config.get('attack_type', 'Unknown')}</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.0.0/dist/chart.min.js"></script>
     <style>
         * {{
@@ -735,7 +748,7 @@ End of Report
         
         body {{
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            background: linear-gradient(135deg, #ff4d4d 0%, #cc0000 100%);
             color: #333;
             padding: 20px;
         }}
@@ -750,11 +763,11 @@ End of Report
         }}
         
         .header {{
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #ff4d4d 0%, #cc0000 100%);
             color: white;
             padding: 40px;
             text-align: center;
-            border-bottom: 4px solid #764ba2;
+            border-bottom: 4px solid #cc0000;
         }}
         
         .header h1 {{
@@ -791,12 +804,12 @@ End of Report
         }}
         
         .metric-card {{
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #ff4d4d 0%, #cc0000 100%);
             color: white;
             padding: 25px;
             border-radius: 10px;
             text-align: center;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 4px 15px rgba(255, 77, 77, 0.4);
             transition: transform 0.3s ease;
         }}
         
@@ -880,8 +893,8 @@ End of Report
 <body>
     <div class="container">
         <div class="header">
-            <h1>Py-DDoS v7.1 Network Stress Test Report</h1>
-            <p>Professional Penetration Testing Tool - Educational Purpose</p>
+            <h1>RedLoad-X v7.1 Network Stress Test Report</h1>
+            <p>Penetration Testing Tool - Educational Purpose</p>
             <p>Generated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}</p>
         </div>
         
@@ -984,7 +997,7 @@ End of Report
         </div>
         
         <div class="footer">
-            <p>Py-DDoS v7.1 | Educational & Authorized Testing Only | {datetime.now().strftime('%Y-%m-%d')}</p>
+            <p>RedLoad-X v7.1 | Educational & Authorized Testing Only | {datetime.now().strftime('%Y-%m-%d')}</p>
             <p>Author: voltsparx | Report ID: {timestamp}</p>
         </div>
     </div>
@@ -1074,6 +1087,13 @@ End of Report
     def _generate_txt_report_legacy(self, stats, config, rps_samples, timestamp):
         """Generate comprehensive TXT/CLI report (legacy interface)"""
         
+        # ensure rps_samples is serializable (deque -> list)
+        if rps_samples is not None and not isinstance(rps_samples, list):
+            try:
+                rps_samples = list(rps_samples)
+            except Exception:
+                rps_samples = []
+        
         # Calculate additional metrics
         rps_avg = statistics.mean(rps_samples) if rps_samples else 0
         rps_peak = max(rps_samples) if rps_samples else 0
@@ -1082,7 +1102,7 @@ End of Report
         
         report = f"""
 {'='*80}
-PY-DDOS v7.1 NETWORK STRESS TEST REPORT
+REDLOAD-X v7.1 NETWORK STRESS TEST REPORT
 {'='*80}
 
 Author: voltsparx

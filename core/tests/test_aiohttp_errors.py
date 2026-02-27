@@ -11,7 +11,7 @@ def test_optional_deps():
     """Test optional_deps module"""
     print("[Test 1] Testing optional_deps module...")
     try:
-        from core.optional_deps import (
+        from core.config.optional_deps import (
             check_aiohttp_available,
             get_aiohttp_install_instructions,
             require_aiohttp,
@@ -38,7 +38,7 @@ def test_async_flood_error():
     """Test AsyncHTTPFlood error handling"""
     print("\n[Test 2] Testing AsyncHTTPFlood error handling...")
     try:
-        from core.async_engine import AsyncHTTPFlood, AIOHTTP_AVAILABLE
+        from core.engine.async_engine import AsyncHTTPFlood, AIOHTTP_AVAILABLE
         
         if AIOHTTP_AVAILABLE:
             # Test valid initialization
@@ -90,7 +90,7 @@ def test_coordinator_error():
     """Test AsyncEngineCoordinator error handling"""
     print("\n[Test 3] Testing AsyncEngineCoordinator error handling...")
     try:
-        from core.async_engine import AsyncEngineCoordinator, AIOHTTP_AVAILABLE
+        from core.engine.async_engine import AsyncEngineCoordinator, AIOHTTP_AVAILABLE
         
         if AIOHTTP_AVAILABLE:
             coord = AsyncEngineCoordinator()

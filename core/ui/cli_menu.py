@@ -1,12 +1,12 @@
 """
-Interactive CLI Menu System for Py-DDoS
+Interactive CLI Menu System for RedLoad-X
 Provides user-friendly interface with colored output
 """
 
 import socket
 from .colors import Styles, Colors
-from .config import Config
-from .metadata import (
+from core.config.config import Config
+from core.config.metadata import (
     PROJECT_NAME,
     VERSION,
     PROJECT_DESCRIPTION,
@@ -15,6 +15,7 @@ from .metadata import (
     LICENSE,
     get_banner,
 )
+from core.engine import is_private_ip
 
 
 def validate_ip_or_domain(target: str) -> tuple:
@@ -157,9 +158,24 @@ def interactive_menu(is_root: bool) -> dict:
     if confirm not in ['yes', 'y']:
         print(Styles.error("Attack cancelled"))
         return None
-    
+
+    # Authorization acknowledgment
+    auth = input(Styles.warning("Do you have explicit written authorization to test this target? (yes/no)") + ": ").strip().lower()
+    if auth not in ['yes', 'y']:
+        print(Styles.error("Authorization required. Attack cancelled."))
+        return None
+    config['authorized'] = True
+
+    # External target flag
+    if not is_private_ip(config['target_host']):
+        ext_auth = input(Styles.warning("Target appears external. Do you have written authorization for external testing? (yes/no)") + ": ").strip().lower()
+        if ext_auth not in ['yes', 'y']:
+            print(Styles.error("External authorization required. Attack cancelled."))
+            return None
+        config['authorized_external'] = True
+
     print()
     print(Styles.success("Configuration complete. Starting attack..."))
     print()
-    
+
     return config

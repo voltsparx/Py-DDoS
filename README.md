@@ -1,8 +1,10 @@
-# Py-DDoS v7.5 - Operational Network Stress Testing Tool
+# RedLoad-X v8.0 - Operational Network Stress Testing Tool
+
+*Originally released as **Py-DDoS**; project was rebranded to RedLoad-X with v7.5 for clarity and improved scope.*
 
 **Author:** voltsparx  
 **Contact:** voltsparx@gmail.com  
-**Version:** 7.5  
+**Version:** 8.0  
 
 ---
 
@@ -32,7 +34,7 @@ Unauthorized access to computer systems is **ILLEGAL** under laws including:
 ## Table of Contents
 
 1. [Overview](#overview)
-2. [What's New in v7.5](#whats-new-in-v75)
+2. [What's New in v8.0](#whats-new-in-v80)
 3. [Installation](#installation)
 4. [Quick Start](#quick-start)
 5. [Features](#features)
@@ -50,28 +52,38 @@ Unauthorized access to computer systems is **ILLEGAL** under laws including:
 
 ## Overview
 
-**Py-DDoS** is a comprehensive **operational network stress testing tool** for security professionals and students. It enables authorized testing of network resilience across multiple OSI layers with professional-grade safety mechanisms, real-time metrics collection, and interactive reporting.
+**RedLoad-X** is a network stress testing tool for security professionals and students. It enables authorized testing of network resilience across multiple OSI layers with robust safety mechanisms, real-time metrics collection, and interactive reporting.
 
 ### Key Characteristics
 - ✅ **8 Attack Vectors** - Multiple OSI layers (L3-L7)
-- ✅ **Enterprise Safety** - Multi-layer protection with audit trails
+- ✅ **Layered Safety** - Multi-layer protection with audit trails
 - ✅ **Real-Time Metrics** - 30+ data points tracked automatically
-- ✅ **Professional Reports** - Interactive HTML charts + analysis
+- ✅ **Detailed Reports** - Interactive HTML charts + analysis
 - ✅ **Educational Framework** - Detailed learning resources
 - ✅ **TOR Integration** - Optional anonymity layer
 - ✅ **Dual Interface** - Interactive menu + CLI + Programmatic
-- ✅ **Comprehensive Logging** - Audit trails for compliance
+- ✅ **Extensive Logging** - Audit trails for compliance
 
 ---
 
-## What's New in v7.5
+## What's New in v8.0
+
+### v8.0 Release Notes
+
+The 8.0 release consolidates the previous 7.5.1 changes and marks a major
+milestone.  Highlights include:
+
+- Added **warn-only safety mode** (`--warn-only-locks`) allowing warnings without
+  blocking operations (ideal for demonstrations).
+- Added unit tests for safety lock behaviours.
+- Updated documentation and metadata to reflect the new version.
 
 ### 1. Enhanced Safety Locks System
 - **Audit Trail Logging** - Every security check is logged with timestamp
 - **Resource Impact Estimation** - Predicts CPU/memory usage before execution
 - **Risk Assessment Reports** - Comprehensive analysis before running attack
 - **Granular Control** - Enable/disable individual safety checks
-- **Advanced Authorization** - Multi-step verification for external targets
+- **Enhanced Authorization** - Multi-step verification for external targets
 - **Script-Friendly Mode** - auto_confirm for automation/CI
 
 **Protections Include:**
@@ -94,10 +106,10 @@ Automatically tracks 30+ metrics throughout test execution:
 - Time-series data for graphing
 - Automatic educational insights
 
-### 3. Advanced Reporting System (NEW)
+### 3. Improved Reporting System (NEW)
 **Core Module:** `core/reporter_v2.py`
 
-Generates professional reports with interactive visualizations:
+Generates detailed reports with interactive visualizations:
 
 **HTML Reports Feature:**
 - Interactive Chart.js graphs (v4.0)
@@ -105,7 +117,7 @@ Generates professional reports with interactive visualizations:
 - HTTP status code breakdown (doughnut)
 - Connection state analysis (pie chart)
 - Responsive mobile-friendly design
-- Professional gradient styling
+- Gradient styling
 - Print-optimized layout
 - Embedded CSS (no external files needed)
 
@@ -153,8 +165,8 @@ All 18 code quality issues fixed:
 ### Step 1: Clone Repository
 
 ```bash
-git clone https://github.com/voltsparx/py-ddos.git
-cd py-ddos
+git clone https://github.com/voltsparx/RedLoad-X.git
+cd RedLoad-X  # rename directory after clone if desired
 ```
 
 ### Step 2: Create Virtual Environment
@@ -178,8 +190,8 @@ pip install -r requirements.txt
 ### Step 4: Verify Installation
 
 ```bash
-python py-ddos.py --version
-python py-ddos.py --help
+python redload-x.py --version  # or python py-ddos.py for compatibility
+python redload-x.py --help     # or python py-ddos.py for compatibility
 ```
 
 ### Requirements.txt
@@ -200,7 +212,7 @@ urllib3>=1.26.0
 ### Interactive Mode (Recommended for Learning)
 
 ```bash
-python py-ddos.py
+python redload-x.py  # or python py-ddos.py (legacy)
 ```
 
 **You'll be prompted for:**
@@ -217,22 +229,22 @@ python py-ddos.py
 
 ```bash
 # Basic HTTP flood
-python py-ddos.py -t example.com -p 80 -a HTTP -d 60 -c 100
+python redload-x.py -t example.com -p 80 -a HTTP -d 60 -c 100  # or py-ddos.py for backward compatibility
 
 # Slowloris with TOR
-python py-ddos.py -t example.com -a SLOWLORIS -d 120 -c 200 --tor
+python redload-x.py -t example.com -a SLOWLORIS -d 120 -c 200 --tor
 
 # UDP flood
-python py-ddos.py -t 192.168.1.1 -a UDP -d 60 -c 500
+python redload-x.py -t 192.168.1.1 -a UDP -d 60 -c 500
 
 # SYN flood (requires root/admin)
-sudo python py-ddos.py -t 192.168.1.1 -a SYN -d 60 -c 1000
+sudo python redload-x.py -t 192.168.1.1 -a SYN -d 60 -c 1000
 
 # Load configuration
-python py-ddos.py --config my_test.json
+python redload-x.py --config my_test.json
 
 # Save configuration
-python py-ddos.py -t example.com -a HTTP -c 100 -d 60 --save-config test.json
+python redload-x.py -t example.com -a HTTP -c 100 -d 60 --save-config test.json
 ```
 ---
 
@@ -256,11 +268,11 @@ python py-ddos.py -t example.com -a HTTP -c 100 -d 60 --save-config test.json
 ✅ **Multi-Vector Testing** - Layer 3 through Layer 7 attacks  
 ✅ **Safety-First Design** - Multi-layer protections enabled by default  
 ✅ **Real-Time Analytics** - 30+ metrics tracked automatically  
-✅ **Professional Reporting** - Interactive charts + analysis  
+✅ **Detailed Reporting** - Interactive charts + analysis  
 ✅ **TOR Integration** - Optional anonymity with circuit rotation  
 ✅ **Dual Interface** - Interactive menu + command-line arguments  
 ✅ **Configuration Management** - Save/load attack configurations  
-✅ **Comprehensive Logging** - Detailed audit trails  
+✅ **Extensive Logging** - Detailed audit trails  
 ✅ **Educational Resources** - Learning materials integrated  
 ✅ **Audit Trails** - Full compliance logging  
 
@@ -282,7 +294,7 @@ python py-ddos.py -t example.com -a HTTP -c 100 -d 60 --save-config test.json
 **Detection:** Standard IDS/WAF detects by request rate, missing cache headers, suspicious user agents.
 
 ```bash
-python py-ddos.py -t example.com -a HTTP -d 60 -c 200
+python redload-x.py -t example.com -a HTTP -d 60 -c 200
 ```
 
 #### 2. Slowloris
@@ -297,7 +309,7 @@ python py-ddos.py -t example.com -a HTTP -d 60 -c 200
 **Detection:** Slowloris signatures, incomplete requests, unusual connection duration.
 
 ```bash
-python py-ddos.py -t example.com -a SLOWLORIS -d 120 -c 500
+python redload-x.py -t example.com -a SLOWLORIS -d 120 -c 500
 ```
 
 #### 3. Slow Read
@@ -312,7 +324,7 @@ python py-ddos.py -t example.com -a SLOWLORIS -d 120 -c 500
 **Detection:** Slow read signatures, unusual connection duration, stalled transfers.
 
 ```bash
-python py-ddos.py -t example.com -a SLOWREAD -d 180 -c 300
+python redload-x.py -t example.com -a SLOWREAD -d 180 -c 300
 ```
 
 ### Layer 4 - Transport Layer
@@ -329,7 +341,7 @@ python py-ddos.py -t example.com -a SLOWREAD -d 180 -c 300
 **Detection:** Packet rate analysis, unusual ports, source reputation.
 
 ```bash
-python py-ddos.py -t 192.168.1.1 -p 53 -a UDP -d 60 -c 500
+python redload-x.py -t 192.168.1.1 -p 53 -a UDP -d 60 -c 500
 ```
 
 #### 5. SYN Flood (Requires Root/Admin)
@@ -342,7 +354,7 @@ python py-ddos.py -t 192.168.1.1 -p 53 -a UDP -d 60 -c 500
 - Prevents legitimate connections
 
 ```bash
-sudo python py-ddos.py -t 192.168.1.1 -a SYN -d 60 -c 1000
+sudo python redload-x.py -t 192.168.1.1 -a SYN -d 60 -c 1000
 ```
 
 #### 6. DNS Amplification
@@ -354,7 +366,7 @@ sudo python py-ddos.py -t 192.168.1.1 -a SYN -d 60 -c 1000
 - Creates traffic amplification (small query → larger response)
 
 ```bash
-python py-ddos.py -t 8.8.8.8 -p 53 -a DNS -d 60 -c 200
+python redload-x.py -t 8.8.8.8 -p 53 -a DNS -d 60 -c 200
 ```
 
 #### 7. NTP Amplification
@@ -366,7 +378,7 @@ python py-ddos.py -t 8.8.8.8 -p 53 -a DNS -d 60 -c 200
 - Target receives amplified traffic
 
 ```bash
-python py-ddos.py -t 192.168.1.1 -p 123 -a NTP -d 60 -c 200
+python redload-x.py -t 192.168.1.1 -p 123 -a NTP -d 60 -c 200
 ```
 
 ### Layer 3 - Network Layer
@@ -381,7 +393,7 @@ python py-ddos.py -t 192.168.1.1 -p 123 -a NTP -d 60 -c 200
 - Responses consume bandwidth
 
 ```bash
-sudo python py-ddos.py -t 192.168.1.1 -a ICMP -d 60 -c 500
+sudo python redload-x.py -t 192.168.1.1 -a ICMP -d 60 -c 500
 ```
 
 ---
@@ -424,44 +436,44 @@ Create reusable configurations:
 
 **Usage:**
 ```bash
-python py-ddos.py --config http_test.json
+python redload-x.py --config http_test.json  # legacy: py-ddos.py also works
 ```
 
 ### Examples by Scenario
 
 #### Lab Environment Testing
 ```bash
-python py-ddos.py -t 192.168.1.100 -a HTTP -d 30 -c 50
+python redload-x.py -t 192.168.1.100 -a HTTP -d 30 -c 50
 ```
 
 #### Authorized Penetration Testing
 ```bash
 # Step 1: Light test
-python py-ddos.py -t target.internal -a HTTP -d 10 -c 10
+python redload-x.py -t target.internal -a HTTP -d 10 -c 10
 
 # Step 2: Moderate test
-python py-ddos.py -t target.internal -a HTTP -d 30 -c 50
+python redload-x.py -t target.internal -a HTTP -d 30 -c 50
 
 # Step 3: Full-scale test
-python py-ddos.py -t target.internal -a HTTP -d 60 -c 200
+python redload-x.py -t target.internal -a HTTP -d 60 -c 200
 ```
 
 #### Stress Testing Web Server
 ```bash
-python py-ddos.py -t example.com -a HTTP -d 120 -c 300
+python redload-x.py -t example.com -a HTTP -d 120 -c 300
 ```
 
 #### Testing TOR-Based Attacks
 ```bash
 # Requires TOR daemon running
 tor --controlport 9051
-python py-ddos.py -t example.com -a HTTP --tor -d 60
+python redload-x.py -t example.com -a HTTP --tor -d 60
 ```
 
 #### Batch Testing Multiple Attacks
 ```bash
 for attack in HTTP SLOWLORIS UDP; do
-  python py-ddos.py -t example.com -a $attack -d 60 -c 100
+  python redload-x.py -t example.com -a $attack -d 60 -c 100
   sleep 30
 done
 ```
@@ -513,17 +525,32 @@ done
 }
 ```
 
-### Disabling Safety Locks (Advanced)
+### Warning-Only Safety Mode
+
+In some cases you may want to see all of the safety warnings without being
+forced to acknowledge each one.  Use **warn-only** mode to convert the
+interactive prompts into informational messages while still allowing the tool
+to proceed:
+
+```bash
+# show warnings but never block
+python redload-x.py --warn-only-locks
+```
+
+The same option can be specified on the CLI during a scripted attack, or it is
+activated automatically when the `--warn-only-locks` flag is parsed.
+
+### Disabling Safety Locks (detailed instructions)
 
 ```bash
 # Requires explicit confirmation
-python py-ddos.py --no-safety-locks
+python redload-x.py --no-safety-locks
 ```
 
 ### Customizing Thresholds
 
 ```python
-from core.safety_locks import SafetyLocks
+from core.safety.safety_locks import SafetyLocks
 
 locks = SafetyLocks()
 locks.thresholds['thread_warning'] = 1000
@@ -546,7 +573,12 @@ During execution, tracks:
 
 ### Report Generation
 
-**Automatic Location:** `reports/pyddos_report_YYYYMMDD_HHMMSS.{html|txt}`
+**Automatic Location:**
+- HTML files saved under `reports/html/redloadx_report_YYYYMMDD_HHMMSS.html`
+- TXT files saved under `reports/cli/redloadx_report_YYYYMMDD_HHMMSS.txt`
+
+The base `reports` directory will be created automatically and subfolders
+`html` and `cli` are used to keep formats separated.
 
 #### HTML Report Contents
 - Executive summary card
@@ -560,7 +592,7 @@ During execution, tracks:
 - Risk assessment section
 - Educational insights
 - Legal disclaimer
-- Professional footer (author, contact, timestamp)
+- Standard footer (author, contact, timestamp)
 
 #### TXT Report Contents
 - Plain text metrics summary
@@ -617,7 +649,7 @@ TARGET STATUS: Degraded performance
 ### Saving Configurations
 
 ```bash
-python py-ddos.py -t example.com -a HTTP -c 100 -d 60 --save-config my_config.json
+python redload-x.py -t example.com -a HTTP -c 100 -d 60 --save-config my_config.json
 ```
 
 ---
@@ -632,7 +664,7 @@ python py-ddos.py -t example.com -a HTTP -c 100 -d 60 --save-config my_config.js
 ```
 **Solution:** Use valid IP or resolvable hostname
 ```bash
-python py-ddos.py -t 192.168.1.1  # Use IP directly
+python redload-x.py -t 192.168.1.1  # Use IP directly
 ```
 
 #### "Root required" Error
@@ -641,7 +673,7 @@ python py-ddos.py -t 192.168.1.1  # Use IP directly
 ```
 **Solution:** Run with sudo/admin privileges
 ```bash
-sudo python py-ddos.py -t 192.168.1.1 -a SYN -d 60
+sudo python redload-x.py -t 192.168.1.1 -a SYN -d 60
 ```
 
 #### "TOR connection failed"
@@ -660,7 +692,7 @@ tor --controlport 9051
 ```
 **Solution:** Wait for connections to close or use different port
 ```bash
-python py-ddos.py -t target.com -p 8080  # Try different port
+python redload-x.py -t target.com -p 8080  # Try different port
 ```
 
 #### "Scapy import error"
@@ -679,7 +711,7 @@ pip install scapy
 ```
 **Solution:** Review safety warnings and confirm authorization
 ```bash
-python py-ddos.py --no-safety-locks  # Only if truly authorized
+python redload-x.py --no-safety-locks  # Only if truly authorized
 ```
 
 #### "Low success rate during test"
@@ -691,7 +723,7 @@ python py-ddos.py --no-safety-locks  # Only if truly authorized
 - **Cause:** Too many threads keeping connections open
 - **Solution:** Reduce thread count
 ```bash
-python py-ddos.py -t target.com -c 50 ...  # Instead of 500
+python redload-x.py -t target.com -c 50 ...  # Instead of 500
 ```
 
 ---
@@ -701,48 +733,75 @@ python py-ddos.py -t target.com -c 50 ...  # Instead of 500
 ### Architecture
 
 ```
-py-ddos/
-├── py-ddos.py                 # Entry point with CLI parsing
+redload-x/
+├── redload-x.py              # Entry point with CLI parsing
 ├── requirements.txt           # Python dependencies
 ├── README.md                  # This documentation
 ├── SECURITY.md               # Legal and security framework
 ├── CONTRIBUTING.md           # Contribution guidelines
 │
 └── core/
-    ├── __init__.py
-    ├── engine.py             # Attack orchestration
-    ├── attacks.py            # Attack implementations
-    ├── attacks_advanced.py   # Advanced attack vectors
-    ├── safety_locks.py       # Safety protections (ENHANCED)
-    ├── metrics.py            # Real-time metrics (NEW)
-    ├── reporter_v2.py        # Advanced reporting (NEW)
-    ├── reporter.py           # Legacy reporting
-    ├── logger.py             # Logging system
-    ├── colors.py             # ANSI color utilities
-    ├── config.py             # Configuration management
-    ├── cli_menu.py           # Interactive menu
-    ├── banner.py             # ASCII art banner
-    ├── tor_handler.py        # TOR integration
-    └── __pycache__/
+    ├── __init__.py            # Package exports and helpers
+    ├── engine/                # Core engine implementation
+    │   ├── __init__.py        # RedLoadX class & helpers
+    │   ├── async_engine.py    # Async HTTP flood support
+    │   ├── rate_limiter.py    # Rate limiting utilities
+    │   └── tor_handler.py     # TOR integration for engine
+    ├── attacks/               # Attack-specific logic
+    │   ├── attack.py          # Worker classes & attack methods
+    │   ├── counters.py        # Thread-safe counters
+    │   ├── metrics.py         # Legacy metrics helpers
+    │   └── __init__.py
+    ├── ui/                    # CLI/interactive interface code
+    │   ├── banner.py          # ASCII/art and version banner
+    │   ├── cli_menu.py        # Interactive menu system
+    │   ├── help_menu.py       # Help output
+    │   ├── about.py           # About prompts
+    │   ├── colors.py          # ANSI color utilities
+    │   └── __init__.py
+    ├── logging/               # Logging subsystems
+    │   ├── logger.py          # Human-readable logger
+    │   ├── structured_logger.py # JSON logging
+    │   └── __init__.py
+    ├── safety/                # Safety lock implementations
+    │   └── safety_locks.py
+    ├── config/                # Configuration and metadata
+    │   ├── config.py
+    │   ├── metadata.py
+    │   ├── optional_deps.py   # Optional dependency helpers
+    │   └── __init__.py
+    ├── tests/                 # Unit/integration tests
+    │   ├── test_attacks.py
+    │   ├── test_aiohttp_errors.py
+    │   └── __init__.py
+    └── reporter.py            # Unified report generator
 ```
 
 ### Core Modules
 
-#### engine.py - Attack Orchestration
-Coordinates attack execution, initializes threads, manages metrics, generates reports.
+#### engine/ package - Attack Orchestration
+Contains `RedLoadX` engine and related helpers (rate limiter, TOR handler, async
+components). Coordinates attack execution, initializes threads, manages metrics,
+generates reports.
+
+**Key Classes/Methods:**
+- `RedLoadX.start()` - Begin attack
+- `RedLoadX.stop()` - Graceful shutdown
+- `RedLoadX.get_metrics()` - Current statistics
+
+#### safety/safety_locks.py - Multi-Layer Safety
+Provides comprehensive protection with audit trails, now located under
+`core/safety` package.
 
 **Key Methods:**
-- `start()` - Begin attack
-- `stop()` - Graceful shutdown
-- `get_metrics()` - Current statistics
-
-#### safety_locks.py - Multi-Layer Safety
-Provides comprehensive protection with audit trails.
-
-**Key Methods:**
-- `check_all(config)` - Run all checks
+- `check_all(config)` - Run all checks (honors warn-only mode)
 - `print_risk_assessment(config)` - Show risks
 - `_save_audit_trail()` - Log audit
+
+**Features:**
+- Warn-only mode (`--warn-only-locks`) shows warnings without blocking
+- Granular lock enable/disable and thresholds
+- Audit trail recording for each decision
 
 #### metrics.py - Real-Time Analytics (NEW)
 Collects 30+ metrics automatically.
@@ -752,8 +811,8 @@ Collects 30+ metrics automatically.
 - `get_summary()` - Get metrics summary
 - `get_educational_insights()` - Generate learning points
 
-#### reporter_v2.py - Advanced Reporting (NEW)
-Generates professional HTML and TXT reports.
+#### reporter_v2.py - Improved Reporting (NEW)
+Generates detailed HTML and TXT reports.
 
 **Key Methods:**
 - `generate(metrics_data, config)` - Create both report types
@@ -778,7 +837,7 @@ self.attacks = {
 }
 ```
 
-3. Update argument parser in `py-ddos.py`
+3. Update argument parser in `redload-x.py`
 4. Test thoroughly with safety locks enabled
 
 #### Extending Metrics
@@ -869,12 +928,14 @@ metrics.record_request(
 
 ### Root Directory
 ```
-py-ddos/
-├── py-ddos.py              # Main entry point
+redload-x/
+├── redload-x.py              # Main entry point
+
+# NOTE: legacy `py-ddos` references retained for backward compatibility where noted
 ├── README.md               # This file
 ├── SECURITY.md            # Legal/security framework
 ├── CONTRIBUTING.md        # Contribution guidelines
-├── TERMINOLOGY_UPDATE.md  # Professional naming
+├── TERMINOLOGY_UPDATE.md  # Consistent naming
 ├── requirements.txt       # Python dependencies
 └── .gitignore            # Git configuration
 ```
@@ -888,7 +949,7 @@ core/
 ├── attacks_advanced.py        # 8 attack implementations
 ├── safety_locks.py            # Safety system (ENHANCED - 280+ lines)
 ├── metrics.py                 # Metrics collector (NEW - 190+ lines)
-├── reporter_v2.py             # Advanced reporting (NEW - 450+ lines)
+├── reporter_v2.py             # Improved reporting (NEW - 450+ lines)
 ├── reporter.py                # Legacy reporting
 ├── logger.py                  # Logging system
 ├── colors.py                  # ANSI colors
@@ -902,12 +963,14 @@ core/
 ### Output Directories
 ```
 logs/
-├── pyddos_YYYYMMDD_HHMMSS.log    # Session logs
+├── redloadx_YYYYMMDD_HHMMSS.log    # Session logs
 └── safety_audit.json              # Audit trail
 
 reports/
-├── pyddos_report_*.html           # Interactive reports with charts
-└── pyddos_report_*.txt            # Analysis reports
+├── html/
+│   └── redloadx_report_*.html       # Interactive reports with charts
+└── cli/
+    └── redloadx_report_*.txt        # Analysis reports
 ```
 
 ---
@@ -932,19 +995,19 @@ reports/
 **For Maximum RPS:**
 ```bash
 # More threads + longer duration
-python py-ddos.py -t target.com -a UDP -c 5000 -d 300
+python redload-x.py -t target.com -a UDP -c 5000 -d 300
 ```
 
 **For Stealth:**
 ```bash
 # Fewer threads + longer duration + TOR
-python py-ddos.py -t target.com -a SLOWLORIS -c 50 -d 600 --tor
+python redload-x.py -t target.com -a SLOWLORIS -c 50 -d 600 --tor
 ```
 
 **For Bandwidth Testing:**
 ```bash
 # UDP or SYN with high thread count
-python py-ddos.py -t target.com -a UDP -c 5000 -p 53
+python redload-x.py -t target.com -a UDP -c 5000 -p 53
 ```
 
 ---
@@ -985,7 +1048,7 @@ python py-ddos.py -t target.com -a UDP -c 5000 -p 53
 
 **Author:** voltsparx  
 **Email:** voltsparx@gmail.com  
-**GitHub:** [py-ddos](https://github.com/voltsparx/py-ddos)
+**GitHub:** [RedLoad-X](https://github.com/voltsparx/RedLoad-X)
 
 ### Getting Help
 
@@ -1002,20 +1065,20 @@ python py-ddos.py -t target.com -a UDP -c 5000 -p 53
 ### v7.1 (Current - February 17, 2026)
 - ✅ Enhanced safety locks with audit trails
 - ✅ Real-time metrics collection system
-- ✅ Advanced report generation with charts
+- ✅ Report generation with charts
 - ✅ Developer-friendly documentation
 - ✅ 18 code quality issues fixed
 - ✅ Type safety (Enum)
 - ✅ Script-friendly auto_confirm
 - ✅ Comprehensive config validation
-- ✅ Production-ready with enterprise features
+- ✅ Production-ready with extended features
 
 ### v7.0 (February 17, 2026)
 - Operational network stress testing tool
 - 8 attack vectors across OSI layers
 - TOR integration
 - Dual interface (CLI + interactive menu)
-- Professional reporting
+- Detailed reporting
 - Comprehensive logging
 
 ---
@@ -1057,7 +1120,7 @@ This tool is provided **AS-IS** for educational purposes. The author (voltsparx)
 
 ---
 
-**Py-DDoS v7.1** - Advanced Network Stress Testing Tool  
+**RedLoad-X v7.1** - Network Stress Testing Tool  
 **By voltsparx** | voltsparx@gmail.com  
 **Released:** February 17, 2026  
 **Status:** Production Ready

@@ -1,6 +1,6 @@
 # TERMINOLOGY
 
-This document defines key terms and concepts used throughout the Py-DDoS project.
+This document defines key terms and concepts used throughout the RedLoad-X project.
 
 ---
 
@@ -18,7 +18,7 @@ This document defines key terms and concepts used throughout the Py-DDoS project
 
 **Async Engine**: The asynchronous attack engine using aiohttp for high concurrency.
 
-**Optional Dependency**: A library (like aiohttp) that is not required for basic operation but enables advanced features.
+**Optional Dependency**: A library (like aiohttp) that is not required for basic operation but enables additional features.
 
 **Structured Logger**: The logging system that outputs events in JSONL format for analysis.
 

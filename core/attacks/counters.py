@@ -56,7 +56,7 @@ class ThreadSafeCounter:
             return self.value
     
     def get_lock(self):
-        """Get lock for advanced usage (multiprocessing.Value compatibility)"""
+        """Get lock for optional multiprocessing usage (multiprocessing.Value compatibility)"""
         return self.lock
     
     def reset(self):

@@ -1,9 +1,9 @@
-# Contributing to Py-DDoS
+# Contributing to RedLoad-X
 
 **Project Author:** voltsparx  
 **Contact:** voltsparx@gmail.com
 
-Thank you for your interest in contributing to this educational project! This document outlines how you can help improve Py-DDoS - the Operational Network Stress Testing Tool.
+Thank you for your interest in contributing to this educational project! This document outlines how you can help improve RedLoad-X - the Operational Network Stress Testing Tool.
 
 ## Code of Conduct
 
@@ -117,8 +117,8 @@ Create a feature request with:
 
 ```bash
 # Clone repository
-git clone https://github.com/user/py-ddos.git
-cd py-ddos
+git clone https://github.com/user/RedLoad-X.git
+cd RedLoad-X
 
 # Create virtual environment
 python3 -m venv venv
@@ -176,13 +176,13 @@ def http_flood(self):
 
 ```bash
 # Format code
-black core/*.py py-ddos.py
+black core/*.py redload-x.py
 
 # Check style
-flake8 core/*.py py-ddos.py
+flake8 core/*.py redload-x.py
 
 # Type checking
-mypy core/*.py py-ddos.py
+mypy core/*.py redload-x.py
 
 # Run tests
 pytest tests/
@@ -211,7 +211,7 @@ git commit -m "Refactor: Separate color output to dedicated module"
 ```python
 # tests/test_attacks.py
 import unittest
-from core.attacks_advanced import AttackWorkers
+from core.attacks.attack import AttackWorkers
 
 class TestAttackWorkers(unittest.TestCase):
     
@@ -386,8 +386,8 @@ Once approved:
 Understanding the codebase:
 
 ```
-py-ddos/
-├── py-ddos.py              # Main entry point
+redload-x/
+├── redload-x.py              # Main entry point
 ├── core/
 │   ├── colors.py           # ANSI color utilities
 │   ├── config.py           # Configuration management
@@ -565,7 +565,7 @@ By contributing, you agree your code will be licensed under the same license as 
 
 ---
 
-**Thank you for contributing to Py-DDoS!**
+**Thank you for contributing to RedLoad-X!**
 
 Your contributions help advance cybersecurity education and awareness.
 

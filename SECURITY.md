@@ -1,13 +1,13 @@
 # Security Guidelines and Legal Framework
 
-**Author:** voltsparx  
+**Author:** voltsparx  (RedLoad-X)
 **Contact:** voltsparx@gmail.com
 
 ## Critical Legal Notice
 
 **IMPORTANT - PLEASE READ CAREFULLY**
 
-This document outlines the legal and ethical framework for using Py-DDoS. Failure to understand and comply with these guidelines may result in:
+This document outlines the legal and ethical framework for using RedLoad-X (formerly Py-DDoS). Failure to understand and comply with these guidelines may result in:
 
 - **Criminal prosecution** under computer fraud laws
 - **Civil lawsuits** from affected organizations
@@ -318,7 +318,7 @@ Week 12: Public disclosure (if no fix)
 
 ```bash
 # Set appropriate file permissions
-chmod 700 py-ddos.py
+chmod 700 redload-x.py  # executable for RedLoad-X
 chmod 700 core/
 
 # Use version control

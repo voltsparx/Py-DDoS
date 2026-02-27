@@ -1,5 +1,5 @@
 """
-Rate Limiting for Py-DDoS - Token Bucket Algorithm
+Rate Limiting for RedLoad-X - Token Bucket Algorithm
 Prevents self-DoS and controls request rates per thread
 
 Implements:

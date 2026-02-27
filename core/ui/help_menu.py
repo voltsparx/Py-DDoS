@@ -1,13 +1,13 @@
 """
-help_menu.py - Centralized help menu for Py-DDoS CLI
+help_menu.py - Centralized help menu for RedLoad-X CLI
 """
 
-from core.colors import Colors, Styles
+from core.ui.colors import Colors, Styles
 
 def print_help_menu():
-    print(Styles.section("Py-DDoS - Advanced Network Stress Testing Tool"))
+    print(Styles.section("RedLoad-X - Network Stress Testing Tool"))
     print(f"{Colors.BRIGHT_CYAN}Usage:{Colors.RESET}")
-    print(f"  {Colors.BRIGHT_YELLOW}python py-ddos.py [options]{Colors.RESET}\n")
+    print(f"  {Colors.BRIGHT_YELLOW}python redload-x.py [options]  # RedLoad-X executable (py-ddos.py works too){Colors.RESET}\n")
     print(f"{Colors.BRIGHT_CYAN}Options:{Colors.RESET}")
     print(f"  {Colors.BRIGHT_YELLOW}-t{Colors.RESET}, {Colors.BRIGHT_YELLOW}--target TARGET{Colors.RESET}         Target IP address or hostname")
     print(f"  {Colors.BRIGHT_YELLOW}-p{Colors.RESET}, {Colors.BRIGHT_YELLOW}--port PORT{Colors.RESET}             Target port (default: 80)")
@@ -24,7 +24,7 @@ def print_help_menu():
     print(f"  {Colors.BRIGHT_YELLOW}--version{Colors.RESET}                   Show version information")
     print(f"  {Colors.BRIGHT_YELLOW}-h{Colors.RESET}, {Colors.BRIGHT_YELLOW}--help{Colors.RESET}                  Show this help message and exit\n")
     print(f"{Colors.BRIGHT_CYAN}Examples:{Colors.RESET}")
-    print(f"  python py-ddos.py -t example.com -a HTTP -d 60 -c 100")
-    print(f"  python py-ddos.py --about")
-    print(f"  python py-ddos.py --test-aiohttp-errors\n")
+    print(f"  python redload-x.py -t example.com -a HTTP -d 60 -c 100")
+    print(f"  python redload-x.py --about")
+    print(f"  python redload-x.py --test-aiohttp-errors\n")
     print(f"For more information, see the README.md or use --about.\n")

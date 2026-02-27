@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Project Metadata for Py-DDoS
+Project Metadata for RedLoad-X
 Centralized version, author, and repository information
 
 Author: voltsparx
@@ -8,12 +8,12 @@ Contact: voltsparx@gmail.com
 """
 
 # Version information
-VERSION = "7.5.0"
-VERSION_NAME = "Advanced Features Release"
-VERSION_DATE = "2026-02-17"
+VERSION = "8.0.0"
+VERSION_NAME = "Major Release"
+VERSION_DATE = "2026-02-27"
 
 # Repository information
-REPOSITORY = "https://github.com/voltsparx/Py-DDoS"
+REPOSITORY = "https://github.com/voltsparx/RedLoad-X"
 REPOSITORY_OWNER = "voltsparx"
 LICENSE = "MIT"
 
@@ -23,9 +23,9 @@ AUTHOR_EMAIL = "voltsparx@gmail.com"
 CONTACT = "voltsparx@gmail.com"
 
 # Project information
-PROJECT_NAME = "Py-DDoS"
-PROJECT_DESCRIPTION = "Advanced network stress testing framework with multi-protocol support"
-PROJECT_URL = "https://github.com/voltsparx/Py-DDoS"
+PROJECT_NAME = "RedLoad-X"
+PROJECT_DESCRIPTION = "Network stress testing tool with multi-protocol support"
+PROJECT_URL = "https://github.com/voltsparx/RedLoad-X"
 
 # Feature flags
 FEATURES = {
@@ -73,7 +73,7 @@ HELP_TEXT = f"""
 {PROJECT_NAME} v{VERSION} - {PROJECT_DESCRIPTION}
 
 Usage:
-    python py-ddos.py
+    python redload-x.py
 
 For more information, visit: {PROJECT_URL}
 Report bugs to: {CONTACT}

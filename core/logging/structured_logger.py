@@ -1,5 +1,5 @@
 """
-Structured JSON Logging for Py-DDoS
+Structured JSON Logging for RedLoad-X
 Provides machine-readable event logging for integration with log aggregation systems
 
 Outputs structured JSON events with timestamp, level, context, and metrics.
@@ -43,7 +43,7 @@ class StructuredJSONLogger:
         self.metrics_log_file = self.log_dir / f"metrics_{timestamp}.jsonl"
         
         # Standard Python logger for backup
-        self.logger = logging.getLogger("py-ddos")
+        self.logger = logging.getLogger("redload-x")
         self.logger.setLevel(logging.DEBUG)
     
     def log_event(

@@ -1,6 +1,6 @@
 """
-Safety Locks System - Advanced multi-layer protections for authorized testing
-Prevents accidental misuse with comprehensive validation, audit trails, and granular controls
+Safety Locks System - Multi-layer protections for authorized testing
+Prevents accidental misuse with thorough validation, audit trails, and granular controls
 
 Author: voltsparx
 Contact: voltsparx@gmail.com
@@ -19,7 +19,7 @@ import datetime
 import json
 import os
 from pathlib import Path
-from .colors import Styles, Colors
+from ..ui.colors import Styles, Colors
 
 
 class SafetyLocks:
@@ -27,6 +27,7 @@ class SafetyLocks:
     
     def __init__(self, audit_log_dir='logs'):
         self.locks_enabled = True
+        self.warn_only = False  # when True, locks warn but never block
         self.audit_log_dir = Path(audit_log_dir)
         self.audit_log_dir.mkdir(exist_ok=True)
         
@@ -87,7 +88,11 @@ class SafetyLocks:
             json.dump(self.audit_trail, f, indent=2)
     
     def check_high_thread_count(self, threads, payload_size=1024, auto_confirm=False):
-        """Advanced thread count validation with resource estimation"""
+        """Thread count validation with resource estimation"""
+        if self.warn_only:
+            # always log and permit
+            self._log_audit('thread_check', {'threads': threads, 'risk': 'WARN_ONLY'}, True)
+            return True
         if not self.locks_enabled or not self.lock_status['high_thread_warning']:
             return True
         
@@ -126,7 +131,10 @@ class SafetyLocks:
         return True
     
     def check_long_duration(self, duration):
-        """Advanced duration validation with time estimation"""
+        """Duration validation with time estimation"""
+        if self.warn_only:
+            self._log_audit('duration_check', {'duration': duration, 'risk': 'WARN_ONLY'}, True)
+            return True
         if not self.locks_enabled or not self.lock_status['long_duration_warning']:
             return True
         
@@ -157,7 +165,10 @@ class SafetyLocks:
         return True
     
     def check_external_target(self, target_ip):
-        """Advanced external target validation with jurisdiction checks"""
+        """External target validation with jurisdiction checks"""
+        if self.warn_only:
+            self._log_audit('external_target_check', {'target': target_ip, 'warn_only': True}, True)
+            return True
         if not self.locks_enabled or not self.lock_status['external_network_warning']:
             return True
         
@@ -202,7 +213,11 @@ class SafetyLocks:
         return True
     
     def check_tor_enabled(self):
-        """Advanced TOR security implications check"""
+        """TOR security implications check"""
+        if self.warn_only:
+            # in warn-only mode we log and allow
+            self._log_audit('tor_check', {'enabled': True, 'risk': 'WARN_ONLY'}, True)
+            return True
         if not self.locks_enabled or not self.lock_status['tor_anonymity_warning']:
             return True
         
@@ -210,8 +225,8 @@ class SafetyLocks:
         print(Styles.warning("SAFETY LOCK: TOR anonymity layer enabled"))
         print(Styles.info("  TOR SECURITY IMPLICATIONS:"))
         print(Styles.info("    • TOR relays log network metadata"))
+        print(Styles.info("    • Exit node operators see TOR connection patterns"))
         print(Styles.info("    • Exit node operators see cleartext traffic"))
-        print(Styles.info("    • Network administrators see TOR connection patterns"))
         print(Styles.info("    • ISP may throttle or block TOR traffic"))
         print()
         print(Styles.warning("  AUTHORIZATION SCOPE:"))
@@ -227,7 +242,13 @@ class SafetyLocks:
         return response in ['yes', 'y']
     
     def check_all(self, config, auto_confirm=False):
-        """Run all applicable safety checks with optional auto-confirmation for scripts"""
+        """Run all applicable safety checks with optional auto-confirmation for scripts
+
+        When :pyattr:`warn_only` is enabled the individual checks will still log
+        warnings but they will always return ``True`` so the attack is not
+        blocked.  This is useful for educational demonstrations where you want
+        the safety messages without requiring explicit confirmation.
+        """
         checks = [
             ('threads', self.check_high_thread_count),
             ('duration', self.check_long_duration),

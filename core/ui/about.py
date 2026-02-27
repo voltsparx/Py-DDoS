@@ -1,14 +1,14 @@
 """
-about.py - Interactive about menu for Py-DDoS
+about.py - Interactive about menu for RedLoad-X
 """
 
-from core.colors import Colors, Styles
-from core.metadata import AUTHOR, CONTACT, VERSION
+from core.ui.colors import Colors, Styles
+from core.config.metadata import AUTHOR, CONTACT, VERSION
 
 def about_prompt():
-    print(Styles.section("ABOUT Py-DDoS"))
+    print(Styles.section("ABOUT RedLoad-X"))
     options = [
-        "What is Py-DDoS?",
+        "What is RedLoad-X?",
         "What do the attack types do?",
         "Types of DDoS Traffic",
         "Credits",
@@ -25,8 +25,8 @@ def about_prompt():
             print(Styles.error("Invalid input. Please enter a number."))
             continue
         if choice == 1:
-            print(Styles.subheader("\nWhat is Py-DDoS?\n"))
-            print(f"{Colors.BRIGHT_CYAN}Py-DDoS{Colors.RESET} is an advanced, modular network stress testing tool for {Colors.BRIGHT_YELLOW}educational{Colors.RESET} and {Colors.BRIGHT_YELLOW}authorized penetration testing{Colors.RESET}. It supports multiple attack vectors (L3-L7), real-time metrics, safety locks, and professional reporting.\nUse only with {Colors.BRIGHT_RED}explicit written authorization{Colors.RESET}.")
+            print(Styles.subheader("\nWhat is RedLoad-X?\n"))
+            print(f"{Colors.BRIGHT_CYAN}RedLoad-X{Colors.RESET} is a modular network stress testing tool for {Colors.BRIGHT_YELLOW}educational{Colors.RESET} and {Colors.BRIGHT_YELLOW}authorized penetration testing{Colors.RESET}. It supports multiple attack vectors (L3-L7), real-time metrics, safety locks, and detailed reporting.\nUse only with {Colors.BRIGHT_RED}explicit written authorization{Colors.RESET}.")
         elif choice == 2:
             print(Styles.subheader("\nAttack Types and How They Work\n"))
             print(f"{Colors.BRIGHT_YELLOW}HTTP:{Colors.RESET} Sends rapid HTTP GET/POST requests to overwhelm web servers.")
@@ -41,7 +41,7 @@ def about_prompt():
             print(f"{Colors.BRIGHT_CYAN}Volumetric:{Colors.RESET} Overwhelms bandwidth with massive traffic (UDP, ICMP, DNS amp).")
             print(f"{Colors.BRIGHT_CYAN}Protocol:{Colors.RESET} Exploits protocol weaknesses (SYN flood, fragmented packets).")
             print(f"{Colors.BRIGHT_CYAN}Application:{Colors.RESET} Targets application layer (HTTP, SLOWLORIS, SLOWREAD).\n")
-            print(Styles.educational_note("How DDoS Attacks Differ", "Volumetric attacks saturate bandwidth. Protocol attacks exhaust server resources. Application attacks target specific services. Py-DDoS can simulate all three for defense testing.") )
+            print(Styles.educational_note("How DDoS Attacks Differ", "Volumetric attacks saturate bandwidth. Protocol attacks exhaust server resources. Application attacks target specific services. RedLoad-X can simulate all three for defense testing.") )
         elif choice == 4:
             print(Styles.subheader("\nCredits\n"))
             print(f"  Author: {Colors.BRIGHT_GREEN}{AUTHOR}{Colors.RESET}")
@@ -58,5 +58,3 @@ def about_prompt():
             break
         else:
             print(Styles.error("Invalid selection. Please choose a valid number.\n"))
-        else:
-            print("Invalid selection. Please choose a valid number.\n")

@@ -1,5 +1,5 @@
 """
-Py-DDoS Engine - Operational network stress test orchestration
+RedLoad-X Engine - Operational network stress test orchestration
 Handles test execution, monitoring, and reporting
 
 Features:
@@ -24,18 +24,18 @@ import statistics
 from enum import Enum
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
-from .colors import Styles, Colors
-from .attack import AttackWorkers
-from .reporter import ReportGenerator
-from .logger import AttackLogger
-from .metrics import MetricsCollector
-from .safety_locks import SafetyLocks
+from ..ui.colors import Styles, Colors
+from ..attacks.attack import AttackWorkers
+from ..reporter import ReportGenerator
+from ..logging.logger import AttackLogger
+from ..attacks.metrics import MetricsCollector
+from ..safety.safety_locks import SafetyLocks
 from .tor_handler import TORHandler
-from .config import Config
-from .counters import ThreadSafeCounter
+from ..config.config import Config
+from ..attacks.counters import ThreadSafeCounter
 from .rate_limiter import RateLimiter
-from .structured_logger import StructuredJSONLogger
-from .metadata import VERSION, PROJECT_NAME, AUTHOR, CONTACT
+from ..logging.structured_logger import StructuredJSONLogger
+from ..config.metadata import VERSION, PROJECT_NAME, AUTHOR, CONTACT
 
 
 class AttackType(Enum):
@@ -66,8 +66,8 @@ def is_private_ip(host):
         return False
 
 
-class PyDDoS:
-    """Main PyDDoS attack engine with advanced features"""
+class RedLoadX:
+    """Main RedLoad-X attack engine with additional features"""
     
     MAX_RPS_HISTORY = 300  # Prevent unbounded memory growth
     WARMUP_DURATION = 5  # Warm-up phase duration (seconds)
@@ -103,11 +103,11 @@ class PyDDoS:
         self.response_times = deque(maxlen=100)
         self.response_lock = threading.Lock()
         
-        self.logger.log("Py-DDoS v7.1 Engine initialized with advanced features")
+        self.logger.log(f"{PROJECT_NAME} v{VERSION} Engine initialized")
         self.use_cli_output = use_cli_output
         self.duration_timer = None
         
-        self.logger.log("Py-DDoS v7.1 Engine initialized")
+        self.logger.log(f"{PROJECT_NAME} v{VERSION} Engine initialized")
     
     def _check_root(self):
         """Check if running with root/admin privileges"""
@@ -348,27 +348,15 @@ class PyDDoS:
         if self.use_tor:
             stats['tor_metrics'] = self.tor_handler.get_metrics()
         
-        # Log attack completion with structured logging
+        # Log attack completion with structured logging (use defined signature)
         self.json_logger.log_attack_complete(
             self.attack_type,
             stats.get('total_packets', 0),
             stats.get('success_count', 0),
             stats.get('error_count', 0),
-            stats['avg_rps'],
-            stats['peak_rps'],
             elapsed,
-            stats.get('success_rate', 0),
-            self.dry_run
-        )
-        self.json_logger.log_attack_complete(
-            self.attack_type,
-            stats.get('success_count', 0),
-            stats.get('error_count', 0),
-            stats.get('total_packets', 0),
-            stats['duration'],
             stats['avg_rps'],
             stats['peak_rps'],
-            stats.get('success_rate', 0)
         )
         
         # Print final statistics
@@ -689,4 +677,7 @@ class PyDDoS:
         return os.cpu_count() or 1
 
 
-__all__ = ['PyDDoS', 'AttackType', 'is_private_ip']
+# maintain backward compatibility
+PyDDoS = RedLoadX
+
+__all__ = ['RedLoadX', 'PyDDoS', 'AttackType', 'is_private_ip']

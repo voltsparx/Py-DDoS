@@ -8,7 +8,7 @@ Contact: voltsparx@gmail.com
 from pathlib import Path
 from datetime import datetime
 import sys
-from .colors import Colors, Styles
+from ..ui.colors import Colors, Styles
 
 
 class AttackLogger:
@@ -27,7 +27,7 @@ class AttackLogger:
     def __init__(self):
         self.log_dir = Path("logs")
         self.log_dir.mkdir(exist_ok=True)
-        self.log_file = self.log_dir / f"pyddos_{datetime.now().strftime('%Y%m%d_%H%M%S')}.log"
+        self.log_file = self.log_dir / f"redloadx_{datetime.now().strftime('%Y%m%d_%H%M%S')}.log"
     
     def log(self, message, level="INFO"):
         """Log message with timestamp and level"""

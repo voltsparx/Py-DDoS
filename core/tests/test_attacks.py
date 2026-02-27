@@ -1,5 +1,5 @@
 """
-Test Harness for Py-DDoS Attack Modules
+Test Harness for RedLoad-X Attack Modules
 Unit tests and integration tests for attack implementations
 
 Tests verify attack signatures, thread safety, error handling, and metrics.
@@ -12,14 +12,9 @@ import unittest
 import threading
 import time
 from unittest.mock import Mock, MagicMock, patch
-import sys
-from pathlib import Path
-
-# Add parent directory to path
-sys.path.insert(0, str(Path(__file__).parent))
-
-from .attack import AttackWorkers, AttackMetrics
-from .counters import ThreadSafeCounter
+from core.attacks.attack import AttackWorkers, AttackMetrics
+from core.attacks.counters import ThreadSafeCounter
+from core.safety.safety_locks import SafetyLocks
 
 
 class TestAttackMetrics(unittest.TestCase):
@@ -281,6 +276,29 @@ class TestMetricsCollection(unittest.TestCase):
         self.assertEqual(total_bytes, 150000)
 
 
+class TestSafetyLocks(unittest.TestCase):
+    """Unit tests for safety lock behaviour"""
+
+    def test_warn_only_mode(self):
+        """Warn-only setting should never block and still log entries"""
+        locks = SafetyLocks()
+        locks.warn_only = True
+        self.assertTrue(locks.check_high_thread_count(10000))
+        self.assertTrue(locks.check_long_duration(99999))
+        self.assertTrue(locks.check_external_target("8.8.8.8"))
+        self.assertTrue(locks.check_tor_enabled())
+        # Should have logged at least one entry per check
+        self.assertGreaterEqual(len(locks.audit_trail), 4)
+
+    def test_disable_locks(self):
+        """disable_locks should turn off the guard when confirmed"""
+        locks = SafetyLocks()
+        # simulate user typing 'disable'
+        with patch('builtins.input', return_value='disable'):
+            self.assertTrue(locks.disable_locks())
+            self.assertFalse(locks.locks_enabled)
+
+
 def run_tests(verbosity=2):
     """Run all tests"""
     loader = unittest.TestLoader()
@@ -295,6 +313,7 @@ def run_tests(verbosity=2):
     suite.addTests(loader.loadTestsFromTestCase(TestAttackWithMocking))
     suite.addTests(loader.loadTestsFromTestCase(TestRateLimitingIntegration))
     suite.addTests(loader.loadTestsFromTestCase(TestMetricsCollection))
+    suite.addTests(loader.loadTestsFromTestCase(TestSafetyLocks))
     
     runner = unittest.TextTestRunner(verbosity=verbosity)
     result = runner.run(suite)

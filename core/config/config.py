@@ -1,14 +1,14 @@
 """
-Configuration module for Py-DDoS
+Configuration module for RedLoad-X
 Handles all configuration and settings
 """
 
 from pathlib import Path
 import json
-from .colors import Styles
+from ..ui.colors import Styles
 
 class Config:
-    """Configuration manager for Py-DDoS"""
+    """Configuration manager for RedLoad-X"""
     
     DEFAULT_CONFIG = {
         'target_host': '',
@@ -21,6 +21,8 @@ class Config:
         'verify_ssl': False,
         'request_rate': 0,  # 0 = unlimited
         'payload_size': 1024,
+        'authorized': False,
+        'authorized_external': False,
     }
     
     ATTACK_TYPES = {

@@ -1,5 +1,5 @@
 """
-Async HTTP Engine for High-Scale Py-DDoS Testing
+Async HTTP Engine for High-Scale RedLoad-X Testing
 Provides asyncio-based HTTP flood with thousands of concurrent connections
 
 Uses aiohttp for efficient async HTTP client with connection pooling.

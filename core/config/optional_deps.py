@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Optional Dependency Handler for Py-DDoS
+Optional Dependency Handler for RedLoad-X
 Provides graceful error handling for optional libraries (aiohttp, etc.)
 
 Author: voltsparx
@@ -34,7 +34,7 @@ aiohttp is not installed. Install it with one of these commands:
   # Install aiohttp directly
   pip install aiohttp>=3.8.0
 
-  # Install py-ddos with async support
+  # Install RedLoad-X with async support
   pip install -e ".[async]"
 
   # Or install all optional dependencies

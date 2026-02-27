@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Py-DDoS v7.5 - Operational Network Stress Testing Tool
+RedLoad-X v8.0 - Operational Network Stress Testing Tool
 For Educational and Authorized Penetration Testing Only
 
 Author: voltsparx
@@ -12,11 +12,11 @@ high-impact network stress tests. Safety locks can be disabled during configurat
 
 Usage:
     Interactive mode:
-        python3 py-ddos.py
+        python3 redload-x.py  # or python3 py-ddos.py for backward compatibility
     
     Command-line mode:
-        python3 py-ddos.py -t target.com -p 80 -a HTTP -d 60 -c 100
-        python3 py-ddos.py --target 192.168.1.1 --port 8080 --attack SLOWLORIS --duration 120
+        python3 redload-x.py -t target.com -p 80 -a HTTP -d 60 -c 100
+        python3 redload-x.py --target 192.168.1.1 --port 8080 --attack SLOWLORIS --duration 120
 
 LEGAL DISCLAIMER:
     This tool is for AUTHORIZED OPERATIONAL TESTING and EDUCATIONAL purposes only.
@@ -39,20 +39,20 @@ import signal
 # Add core directory to path
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from core.colors import Styles, Colors
-from core.config import Config
-from core.cli_menu import interactive_menu, print_banner
-from core.engine import PyDDoS
-from core.safety_locks import SafetyLocks
-from core.metadata import VERSION, PROJECT_NAME, AUTHOR, CONTACT
+from core.ui.colors import Styles, Colors
+from core.config.config import Config
+from core.ui.cli_menu import interactive_menu, print_banner
+from core.engine import RedLoadX, is_private_ip
+from core.safety.safety_locks import SafetyLocks
+from core.config.metadata import VERSION, PROJECT_NAME, AUTHOR, CONTACT
 
 
 def create_parser():
     """Create command-line argument parser with educational help"""
     
     # Custom help text with educational notes
-    help_text = """
-Py-DDoS v7.0 - Operational Network Stress Testing Tool
+    help_text = f"""
+{PROJECT_NAME} v{VERSION} - Operational Network Stress Testing Tool
 
 Author: voltsparx | Contact: voltsparx@gmail.com
 
@@ -85,27 +85,25 @@ SAFETY FEATURES:
 """
     
     parser = argparse.ArgumentParser(
-        prog='py-ddos',
+        prog='redload-x',
         description=help_text,
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
-    parser.add_argument('--test-aiohttp-errors', action='store_true', help='Run aiohttp error handling test suite (developer only)')
-    parser.add_argument('--about', action='store_true', help='Show information about this tool, attacks, credits, and disclaimers')
 EXAMPLES:
   # Interactive mode with safety locks
-  python3 py-ddos.py
+  python3 redload-x.py  # or python3 py-ddos.py
   
   # HTTP flood attack
-  python3 py-ddos.py -t example.com -p 80 -a HTTP -d 60 -c 100
+  python3 redload-x.py -t example.com -p 80 -a HTTP -d 60 -c 100
   
   # Slowloris attack with TOR (requires confirmation)
-  python3 py-ddos.py -t 192.168.1.1 -p 8080 -a SLOWLORIS -d 120 --tor
+  python3 redload-x.py -t 192.168.1.1 -p 8080 -a SLOWLORIS -d 120 --tor
   
   # UDP flood with many threads
-  python3 py-ddos.py --target example.com --attack UDP --duration 300 --threads 500
+  python3 redload-x.py --target example.com --attack UDP --duration 300 --threads 500
   
   # List all available attacks
-  python3 py-ddos.py -l
+  python3 redload-x.py -l
 
 EDUCATIONAL NOTES:
   Understanding DDoS attacks is crucial for:
@@ -123,7 +121,7 @@ EDUCATIONAL NOTES:
   - Rate limiting and throttling
   - Geographic distribution
   - Anycast network routing
-  - Advanced filtering and monitoring
+  - Additional filtering and monitoring
 
 LEGAL NOTICE:
   Using this tool against systems without explicit written authorization is ILLEGAL
@@ -153,6 +151,8 @@ Author: voltsparx | Contact: voltsparx@gmail.com
                        help='Number of worker threads (default: 100)')
     
     # Optional features
+    parser.add_argument('--about', dest='about', action='store_true',
+                       help='Show interactive about information and exit')
     parser.add_argument('--tor', dest='use_tor', action='store_true',
                        help='Enable TOR anonymity layer (triggers confirmation)')
     parser.add_argument('--config', dest='config_file',
@@ -161,11 +161,13 @@ Author: voltsparx | Contact: voltsparx@gmail.com
                        help='Save configuration to JSON file after test')
     parser.add_argument('--no-safety-locks', dest='no_safety', action='store_true',
                        help='Disable safety locks (requires confirmation)')
+    parser.add_argument('--warn-only-locks', dest='warn_only', action='store_true',
+                       help='Show safety warnings but allow operation regardless')
     
     # Utility options
     parser.add_argument('-l', '--list-attacks', dest='list_attacks', action='store_true',
                        help='List all available test scenarios with descriptions')
-    parser.add_argument('--version', action='version', version='Py-DDoS v7.0 - Educational Edition')
+    parser.add_argument('--version', action='version', version=f'{PROJECT_NAME} v{VERSION} - Educational Edition')
     
     return parser
 
@@ -206,21 +208,21 @@ MITIGATION STRATEGIES:
   3. DDoS scrubbing centers
   4. BGP flowspec filtering
   5. Anycast distribution networks
-  6. Advanced traffic analysis and detection"""))
+  6. Additional traffic analysis and detection"""))
     
     print()
 
 
 def main():
-        # About flag: show interactive about prompt
-        if getattr(args, 'about', False):
-            from core.about import about_prompt
-            about_prompt()
-            sys.exit(0)
     """Main entry point with safety lock integration"""
-    
     parser = create_parser()
     args = parser.parse_args()
+
+    # About flag: show interactive about prompt
+    if getattr(args, 'about', False):
+        from core.ui.about import about_prompt
+        about_prompt()
+        sys.exit(0)
 
     # Developer test: run aiohttp error handling test suite
     if getattr(args, 'test_aiohttp_errors', False):
@@ -233,23 +235,33 @@ def main():
     # Initialize safety locks
     safety = SafetyLocks()
     
+    # Configure warn-only behaviour (warnings only, no blocking)
+    if getattr(args, 'warn_only', False):
+        safety.warn_only = True
+        print(Styles.info("Safety locks set to warn-only mode (no restrictions)"))
+    
     # Check if safety locks should be disabled
     if args.no_safety:
         print(Styles.warning("You requested to disable safety locks"))
         if not safety.disable_locks():
             sys.exit(1)
     
-    # Check if no arguments provided
-    if len(sys.argv) == 1:
+    # Check if interactive mode should be used.  Normally this is when no
+    # arguments were provided, but we also allow running interactively when
+    # the only flag is --warn-only-locks so the user can see warnings while
+    # using the menu.
+    interactive_only_args = args.warn_only and len(sys.argv) == 2
+    if len(sys.argv) == 1 or interactive_only_args:
         # Interactive mode
         print_banner()
         Config.print_disclaimer()
         print()
         print(Styles.info("Safety locks are ENABLED by default"))
         print(Styles.info("You will receive confirmation prompts for high-impact configurations"))
+        print(Styles.info("Use --warn-only-locks to convert prompts into warnings without blocking"))
         print()
         
-        engine = PyDDoS(use_cli_output=True)
+        engine = RedLoadX(use_cli_output=True)
         config = interactive_menu(engine.is_root)
         
         if config:
@@ -303,7 +315,7 @@ def main():
             sys.exit(1)
         
         # Check root requirement
-        engine = PyDDoS(use_cli_output=True)
+        engine = RedLoadX(use_cli_output=True)
         if attack_info['requires_root'] and not engine.is_root:
             print(Styles.error(f"{args.attack_type} attack requires root/admin privileges"))
             sys.exit(1)
@@ -317,7 +329,10 @@ def main():
             'threads': args.threads,
             'duration': args.duration,
             'use_tor': args.use_tor or False,
-            'proxies': None
+            'proxies': None,
+            # assume authorization when using CLI mode; safety locks will still prompt
+            'authorized': True,
+            'authorized_external': not is_private_ip(resolved_ip)
         }
         
         # Load config file if specified
@@ -325,6 +340,9 @@ def main():
             print(Styles.info(f"Loading configuration from {args.config_file}"))
             loaded_config = Config.load_config(args.config_file)
             config.update(loaded_config)
+            # ensure authorization flags remain set
+            config.setdefault('authorized', True)
+            config.setdefault('authorized_external', not is_private_ip(resolved_ip))
         
         # Display configuration
         print()
@@ -358,11 +376,11 @@ def main():
     
     else:
         # Missing required arguments
-        from core.help_menu import print_help_menu
+        from core.ui.help_menu import print_help_menu
         print_help_menu()
         print()
         print(Styles.warning("Missing required arguments for command-line mode"))
-        print(Styles.info("Use: python3 py-ddos.py --help for more information"))
+        print(Styles.info("Use: python3 redload-x.py --help for more information (or python3 py-ddos.py)"))
         sys.exit(1)
 
 

@@ -1,5 +1,5 @@
 """
-Py-DDoS Attack Implementations v7.1
+RedLoad-X Attack Implementations v7.1
 Comprehensive DDoS attack vectors across multiple OSI layers
 For authorized testing and educational purposes only
 
@@ -49,7 +49,7 @@ class AttackMetrics:
 
 class AttackWorkers:
     """
-    Advanced DDoS attack worker implementation
+    DDoS attack worker implementation
     
     Implements 8 different attack types across OSI layers 3-7
     Each attack runs in its own thread for parallelization
